@@ -10,14 +10,15 @@ _DEFAULT_LOOKUP_CACHE_FILENAME = ".lookup.cache.json"
 
 def _load_sls_mirrors(url):
 
-    import json
-    with open("activehosts.json") as f:
-            hosts = json.loads(f.read())
+    # import json
+    # with open("activehosts.json") as f:
+    #         hosts = json.loads(f.read())
 
-    # r = requests.get(url)
-    # assert r.status_code == 200
-    # assert "application/json" in r.headers["content-type"]
-    # hosts = r.json()
+    logging.warn("downloading from " + url)
+    r = requests.get(url)
+    assert r.status_code == 200
+    assert "application/json" in r.headers["content-type"]
+    hosts = r.json()
 
     assert "hosts" in hosts
     for h in hosts["hosts"]:
@@ -32,23 +33,24 @@ def _service_elements_by_type(service_data, type):
 
 def _download_parse_lookup_data(url):
 
-    CACHED_RECORDS = {
-        "http://ps-west.es.net:8090/lookup/records": "records.ps-west",
-        "http://ps-east.es.net:8090/lookup/records": "records.ps-east",
-        "http://monipe-ls.rnp.br:8090/lookup/records": "records.monipe-ls",
-        "http://ps-sls.sanren.ac.za:8090/lookup/records": "records.ps-sls.sanren",
-        "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/": "records.aarnet"
-    }
+    # CACHED_RECORDS = {
+    #     "http://ps-west.es.net:8090/lookup/records": "records.ps-west",
+    #     "http://ps-east.es.net:8090/lookup/records": "records.ps-east",
+    #     "http://monipe-ls.rnp.br:8090/lookup/records": "records.monipe-ls",
+    #     "http://ps-sls.sanren.ac.za:8090/lookup/records": "records.ps-sls.sanren",
+    #     "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/": "records.aarnet"
+    # }
+    #
+    # assert url in CACHED_RECORDS
+    # import json
+    # with open(CACHED_RECORDS[url]) as f:
+    #     service_data = json.loads(f.read())
 
-    assert url in CACHED_RECORDS
-    import json
-    with open(CACHED_RECORDS[url]) as f:
-        service_data = json.loads(f.read())
-
-    # r = requests.get(url)
-    # assert r.status_code == 200
-    # assert "application/json" in r.headers["content-type"]
-    # services = r.json()
+    logging.warn("downloading from " + url)
+    r = requests.get(url)
+    assert r.status_code == 200
+    assert "application/json" in r.headers["content-type"]
+    service_data = r.json()
 
     assert isinstance(service_data, (list,tuple))
     logging.debug("%s elements: %d" % (url, len(service_data)))
@@ -92,7 +94,7 @@ def _download_lookup_data():
     hosts = []
     for mirror_url in _load_sls_mirrors(_SLS_BOOTSTRAP_URL):
         mirror_hosts = _download_parse_lookup_data(mirror_url)
-        logging.warn("%s hosts: %d" % (mirror_url, len(mirror_hosts)))
+        logging.debug("downloaded from %s: %d" % (mirror_url, len(mirror_hosts)))
         hosts.extend(mirror_hosts)
     return hosts
     # print "%s clients: %d" % (mirror_url, len(clients))
@@ -119,12 +121,7 @@ def _load_lookup_data():
                            separators = (',', ': ')))
     return hosts
 
+
 if __name__ == "__main__":
-
     logging.basicConfig(level=logging.WARN)
-
     print len(_load_lookup_data())
-
-
-
-# print list(_load_sls_mirrors())
