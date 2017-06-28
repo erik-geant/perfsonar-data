@@ -1,5 +1,11 @@
-import requests
+import json
 import logging
+import os
+
+import requests
+
+_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
+_DEFAULT_LOOKUP_CACHE_FILENAME = ".lookup.cache.json"
 
 
 def _load_sls_mirrors(url):
@@ -24,7 +30,7 @@ def _service_elements_by_type(service_data, type):
     return [e for e in service_data if type in e["type"]]
 
 
-def _load_clients(url):
+def _download_parse_lookup_data(url):
 
     CACHED_RECORDS = {
         "http://ps-west.es.net:8090/lookup/records": "records.ps-west",
@@ -81,19 +87,43 @@ def _get_service_location(service_element):
     location["sitename"] = service_element.get("location-sitename", [None])[0]
     return location
 
+
+def _download_lookup_data():
+    hosts = []
+    for mirror_url in _load_sls_mirrors(_SLS_BOOTSTRAP_URL):
+        mirror_hosts = _download_parse_lookup_data(mirror_url)
+        logging.warn("%s hosts: %d" % (mirror_url, len(mirror_hosts)))
+        hosts.extend(mirror_hosts)
+    return hosts
+    # print "%s clients: %d" % (mirror_url, len(clients))
+    # for c in clients:
+    #     for s in c["service"]:
+    #         location = _get_service_location(s)
+    #         logging.warn(str(location))
+
+
+def _load_lookup_data():
+    if os.path.isfile(_DEFAULT_LOOKUP_CACHE_FILENAME):
+        try:
+            with open(_DEFAULT_LOOKUP_CACHE_FILENAME) as f:
+                return json.loads(f.read())
+        except ValueError:
+            logging.warn("lookup cache is corrupt, reloading...")
+            pass
+
+    hosts = _download_lookup_data()
+    with open(_DEFAULT_LOOKUP_CACHE_FILENAME, "w+") as f:
+        f.write(json.dumps(hosts,
+                           sort_keys=True,
+                           indent=4,
+                           separators = (',', ': ')))
+    return hosts
+
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.WARN)
 
-    SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
-
-    for mirror_url in _load_sls_mirrors(SLS_BOOTSTRAP_URL):
-        clients = _load_clients(mirror_url)
-        print "%s clients: %d" % (mirror_url, len(clients))
-        for c in clients:
-            for s in c["service"]:
-                location = _get_service_location(s)
-                logging.warn(str(location))
+    print len(_load_lookup_data())
 
 
 
