@@ -104,7 +104,7 @@ def _download_lookup_data():
     #         logging.warn(str(location))
 
 
-def _load_lookup_data():
+def load_lookup_data():
     if os.path.isfile(_DEFAULT_LOOKUP_CACHE_FILENAME):
         try:
             with open(_DEFAULT_LOOKUP_CACHE_FILENAME) as f:
@@ -124,4 +124,4 @@ def _load_lookup_data():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
-    print len(_load_lookup_data())
+    print len(load_lookup_data())
