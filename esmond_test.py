@@ -1,6 +1,7 @@
 import requests
 
-ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
+_ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
+
 
 def _load_tests(ps_base_url):
     """
@@ -12,7 +13,7 @@ def _load_tests(ps_base_url):
     with open("archive.json") as f:
         archive = json.loads(f.read())
 
-    # r = requests.get(ps_base_url 55+ ESMOND_ARCHIVE_PATH)
+    # r = requests.get(ps_base_url + _ESMOND_ARCHIVE_PATH)
     # assert r.status_code
     # assert "application/json" in r.headers["content-type"]
     #
