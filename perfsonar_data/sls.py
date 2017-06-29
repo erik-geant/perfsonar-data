@@ -1,25 +1,18 @@
-import json
+# import json
 import logging
-import os
+# import os
 
-import requests
+# import requests
+
+import proxy
 
 _SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
-_DEFAULT_LOOKUP_CACHE_FILENAME = ".lookup.cache.json"
+# _DEFAULT_LOOKUP_CACHE_FILENAME = ".lookup.cache.json"
 
 
 def _load_sls_mirrors(url):
 
-    # import json
-    # with open("activehosts.json") as f:
-    #         hosts = json.loads(f.read())
-
-    logging.warn("downloading from " + url)
-    r = requests.get(url)
-    assert r.status_code == 200
-    assert "application/json" in r.headers["content-type"]
-    hosts = r.json()
-
+    hosts = proxy.load_url_json(url)
     assert "hosts" in hosts
     for h in hosts["hosts"]:
         assert {"locator", "priority", "status"} <= set(h.keys())
@@ -46,12 +39,7 @@ def _download_parse_lookup_data(url):
     # with open(CACHED_RECORDS[url]) as f:
     #     service_data = json.loads(f.read())
 
-    logging.warn("downloading from " + url)
-    r = requests.get(url)
-    assert r.status_code == 200
-    assert "application/json" in r.headers["content-type"]
-    service_data = r.json()
-
+    service_data = proxy.load_url_json(url)
     assert isinstance(service_data, (list,tuple))
     logging.debug("%s elements: %d" % (url, len(service_data)))
 
@@ -104,24 +92,25 @@ def _download_lookup_data():
     #         logging.warn(str(location))
 
 
-def load_lookup_data():
-    if os.path.isfile(_DEFAULT_LOOKUP_CACHE_FILENAME):
-        try:
-            with open(_DEFAULT_LOOKUP_CACHE_FILENAME) as f:
-                return json.loads(f.read())
-        except ValueError:
-            logging.warn("lookup cache is corrupt, reloading...")
-            pass
-
-    hosts = _download_lookup_data()
-    with open(_DEFAULT_LOOKUP_CACHE_FILENAME, "w+") as f:
-        f.write(json.dumps(hosts,
-                           sort_keys=True,
-                           indent=4,
-                           separators = (',', ': ')))
-    return hosts
+# def load_lookup_data():
+#     if os.path.isfile(_DEFAULT_LOOKUP_CACHE_FILENAME):
+#         try:
+#             with open(_DEFAULT_LOOKUP_CACHE_FILENAME) as f:
+#                 return json.loads(f.read())
+#         except ValueError:
+#             logging.warn("lookup cache is corrupt, reloading...")
+#             pass
+#
+#     hosts = _download_lookup_data()
+#     with open(_DEFAULT_LOOKUP_CACHE_FILENAME, "w+") as f:
+#         f.write(json.dumps(hosts,
+#                            sort_keys=True,
+#                            indent=4,
+#                            separators = (',', ': ')))
+#     return hosts
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARN)
-    print len(load_lookup_data())
+    # print len(load_lookup_data())
+    print len(_download_lookup_data())
