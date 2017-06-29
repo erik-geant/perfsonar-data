@@ -1,4 +1,4 @@
-import requests
+import proxy
 
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
@@ -9,17 +9,8 @@ def _load_tests(ps_base_url):
     :param ps_base_url: perfSONAR base url
     :return: list of test structs
     """
-    import json
-    with open("archive.json") as f:
-        archive = json.loads(f.read())
-
-    # r = requests.get(ps_base_url + _ESMOND_ARCHIVE_PATH)
-    # assert r.status_code
-    # assert "application/json" in r.headers["content-type"]
-    #
-    # archive = r.json()
+    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH)
     assert isinstance(archive, (list, tuple))
-
     return archive
     
 
@@ -85,6 +76,9 @@ def _group_by_tool(list_of_tests):
 
 
 if __name__ == "__main__":
+
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
 
     # PS_BASE_URL = "http://192.87.30.58/"
     PS_BASE_URL = "http://158.125.250.70/"
