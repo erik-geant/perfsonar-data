@@ -5,7 +5,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 import perfsonar_data
+from perfsonar_data import esmond
+from perfsonar_data import proxy
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+
+PS_BASE_URL = "http://158.125.250.70/"
 TEST_DATA_FILES = {
     # ACTIVE_HOSTS
     "http://ps-west.es.net:8096/lookup/activehosts.json": "activehosts.json",
@@ -18,7 +26,7 @@ TEST_DATA_FILES = {
     "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/": "records.aarnet",
 
     # TEST_ARCHIVE
-    "http://158.125.250.70/esmond/perfsonar/archive/": "archive.json",
+    PS_BASE_URL + "esmond/perfsonar/archive/": "archive.json",
 }
 
 
@@ -62,7 +70,8 @@ def db_with_test_data(empty_db):
     :return: dsn (string)
     """
 
-    engine = create_engine(empty_db, echo=True)
+    engine = create_engine(empty_db)
+    # engine = create_engine(empty_db, echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -93,7 +102,8 @@ def test_testdata(db_with_test_data):
     :param db_with_test_data: dsn of temporary db
     :return:
     """
-    engine = create_engine(db_with_test_data, echo=True)
+    engine = create_engine(db_with_test_data)
+    # engine = create_engine(db_with_test_data, echo=True)
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -101,3 +111,43 @@ def test_testdata(db_with_test_data):
         perfsonar_data.model.Doc).all() }
 
     assert test_urls == set(TEST_DATA_FILES.keys())
+
+
+# PS_BASE_URL = "http://192.87.30.58/"
+def test_esmond_group_by_participants(db_with_test_data):
+    """
+    sanity test on group_by_participants
+
+    test data contains non-zero number of participants
+    :param db_with_test_data:
+    :return:
+    """
+    proxy.init_db_engine(dsn=db_with_test_data)
+
+    tests = esmond.load_tests(PS_BASE_URL)
+    num_participants = 0
+    for g in esmond.group_by_participants(tests):
+        logging.info("participants: " + str(g["participants"]))
+        logging.info("  num tests: %d" % len(g["tests"]))
+        num_participants += 1
+
+    assert num_participants > 0, "test data contained participiants, but none found"
+
+
+def test_esmond_group_by_tool(db_with_test_data):
+    """
+    sanity test on group_by_tool
+
+    test data contains non-zero number of tools
+    :param db_with_test_data:
+    :return:
+    """
+    proxy.init_db_engine(dsn=db_with_test_data)
+
+    tests = esmond.load_tests(PS_BASE_URL)
+    num_tools = 0
+    for name, tests in esmond.group_by_tool(tests).items():
+        logging.info("'%s': %d tests" % (name, len(tests)))
+        num_tools += 1
+
+    assert num_tools > 0, "test data contained tools, but none found"

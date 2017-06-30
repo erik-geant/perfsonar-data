@@ -3,7 +3,7 @@ import proxy
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
 
-def _load_tests(ps_base_url):
+def load_tests(ps_base_url):
     """
     loads the esmond test archive summary
     :param ps_base_url: perfSONAR base url
@@ -14,7 +14,7 @@ def _load_tests(ps_base_url):
     return archive
     
 
-def _get_test_participants(list_of_tests):
+def get_test_participants(list_of_tests):
     """
     returns a list of unique participants, each of which
     is a dict with format:
@@ -32,7 +32,7 @@ def _get_test_participants(list_of_tests):
     return [dict(p) for p in partset]
 
 
-def _group_by_participants(list_of_tests):
+def group_by_participants(list_of_tests):
     """
     list of dicts, each element of which has elements:
         "participants": {"source": <address>, "destination": <address>}
@@ -42,7 +42,7 @@ def _group_by_participants(list_of_tests):
     :return: list of tests, grouped by participant
     """
     result = {}
-    for p in _get_test_participants(list_of_tests):
+    for p in get_test_participants(list_of_tests):
         # frozenset(dict.items) returns a hashable
         # representation of the dict
         result[frozenset(p.items())] = {
@@ -58,7 +58,7 @@ def _group_by_participants(list_of_tests):
     return result.values()
 
 
-def _group_by_tool(list_of_tests):
+def group_by_tool(list_of_tests):
     """
     returns a dict that groups tests by "tool-name", keys
     are tool-name and values are the corresponding test dicts
@@ -84,11 +84,11 @@ if __name__ == "__main__":
     PS_BASE_URL = "http://158.125.250.70/"
 
 
-    for g in _group_by_participants(_load_tests(PS_BASE_URL)):
+    for g in group_by_participants(load_tests(PS_BASE_URL)):
         print "participants: " + str(g["participants"])
         print "   num tests: %d" % len(g["tests"])
 
-    for n,tests in _group_by_tool(_load_tests(PS_BASE_URL)).items():
+    for n,tests in group_by_tool(load_tests(PS_BASE_URL)).items():
         print "%s: %d" % (n, len(tests))
     # for p in _get_test_participants(_load_tests(PS_BASE_URL)):
     #
