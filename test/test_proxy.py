@@ -13,7 +13,6 @@ def test_testdata(db_with_test_data):
     """
     basic sanity test on the test db creation
     :param db_with_test_data: dsn of temporary db
-    :return:
     """
     engine = create_engine(db_with_test_data)
     # engine = create_engine(db_with_test_data, echo=True)

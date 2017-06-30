@@ -3,9 +3,11 @@ import os
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data")
 
 ESMOND_BASE_URL = "http://158.125.250.70/"
+SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
+
 TEST_DATA_FILES = {
     # ACTIVE_HOSTS
-    "http://ps-west.es.net:8096/lookup/activehosts.json": "activehosts.json",
+    SLS_BOOTSTRAP_URL: "activehosts.json",
 
     # HOST_RECORDS
     "http://ps-west.es.net:8090/lookup/records": "records.ps-west",

@@ -1,17 +1,14 @@
-# import json
 import logging
-# import os
-
-# import requests
-
 import proxy
-
-_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
-# _DEFAULT_LOOKUP_CACHE_FILENAME = ".lookup.cache.json"
 
 
 def _load_sls_mirrors(url):
+    """
+    load url's of hosts containing ps service lists
 
+    :param url:
+    :return:
+    """
     hosts = proxy.load_url_json(url)
     assert "hosts" in hosts
     for h in hosts["hosts"]:
@@ -25,20 +22,19 @@ def _service_elements_by_type(service_data, type):
 
 
 def _download_parse_lookup_data(url):
+    """
+    download and parse service data
 
-    # CACHED_RECORDS = {
-    #     "http://ps-west.es.net:8090/lookup/records": "records.ps-west",
-    #     "http://ps-east.es.net:8090/lookup/records": "records.ps-east",
-    #     "http://monipe-ls.rnp.br:8090/lookup/records": "records.monipe-ls",
-    #     "http://ps-sls.sanren.ac.za:8090/lookup/records": "records.ps-sls.sanren",
-    #     "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/": "records.aarnet"
-    # }
-    #
-    # assert url in CACHED_RECORDS
-    # import json
-    # with open(CACHED_RECORDS[url]) as f:
-    #     service_data = json.loads(f.read())
+    result is a list of dicts of all services with the same client-uuid,
+    each element of which is formatted as:
 
+        "hosts": list of elements of type "host" with the same client-uuid
+        "service": list of elements of type "service" with the same client-uuid
+        "psmetadata": list of elements of type "psmetadata" with the same client-uuid
+
+    :param url:
+    :return:
+    """
     service_data = proxy.load_url_json(url)
     assert isinstance(service_data, (list,tuple))
     logging.debug("%s elements: %d" % (url, len(service_data)))
@@ -68,7 +64,13 @@ def _download_parse_lookup_data(url):
     return clients.values()
 
 
-def _get_service_location(service_element):
+def get_service_location(service_element):
+    """
+    utility for generating a well-formatted dict of location elements
+    for a particular service_element
+    :param service_element:
+    :return:
+    """
     location = {}
     location["city"] = service_element.get("location-city", [None])[0]
     location["country"] = service_element.get("location-country", [None])[0]
@@ -78,9 +80,16 @@ def _get_service_location(service_element):
     return location
 
 
-def _download_lookup_data():
+def download_lookup_data(sls_bootstrap_url):
+    """
+    download mirror hosts from the bootstrap url, and then for each
+    download and parse the service list
+
+    :param sls_bootstrap_url:
+    :return: list of all hosts discovered on each mirror listed by the bootstrap url
+    """
     hosts = []
-    for mirror_url in _load_sls_mirrors(_SLS_BOOTSTRAP_URL):
+    for mirror_url in _load_sls_mirrors(sls_bootstrap_url):
         mirror_hosts = _download_parse_lookup_data(mirror_url)
         logging.debug("downloaded from %s: %d" % (mirror_url, len(mirror_hosts)))
         hosts.extend(mirror_hosts)
@@ -90,27 +99,3 @@ def _download_lookup_data():
     #     for s in c["service"]:
     #         location = _get_service_location(s)
     #         logging.warn(str(location))
-
-
-# def load_lookup_data():
-#     if os.path.isfile(_DEFAULT_LOOKUP_CACHE_FILENAME):
-#         try:
-#             with open(_DEFAULT_LOOKUP_CACHE_FILENAME) as f:
-#                 return json.loads(f.read())
-#         except ValueError:
-#             logging.warn("lookup cache is corrupt, reloading...")
-#             pass
-#
-#     hosts = _download_lookup_data()
-#     with open(_DEFAULT_LOOKUP_CACHE_FILENAME, "w+") as f:
-#         f.write(json.dumps(hosts,
-#                            sort_keys=True,
-#                            indent=4,
-#                            separators = (',', ': ')))
-#     return hosts
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.WARN)
-    # print len(load_lookup_data())
-    print len(_download_lookup_data())

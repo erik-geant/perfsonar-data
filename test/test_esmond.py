@@ -12,8 +12,7 @@ def test_esmond_group_by_participants(db_with_test_data):
     sanity test on group_by_participants
 
     test data contains non-zero number of participants
-    :param db_with_test_data:
-    :return:
+    :param db_with_test_data: dsn of temporary db
     """
     proxy.init_db_engine(dsn=db_with_test_data)
 
@@ -32,8 +31,7 @@ def test_esmond_group_by_tool(db_with_test_data):
     sanity test on group_by_tool
 
     test data contains non-zero number of tools
-    :param db_with_test_data:
-    :return:
+    :param db_with_test_data: dsn of temporary db
     """
     proxy.init_db_engine(dsn=db_with_test_data)
 
