@@ -13,8 +13,8 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 
-PS_BASE_URL = "http://158.125.250.70/"
-TEST_DATA_FILES = {
+_ESMOND_BASE_URL = "http://158.125.250.70/"
+_TEST_DATA_FILES = {
     # ACTIVE_HOSTS
     "http://ps-west.es.net:8096/lookup/activehosts.json": "activehosts.json",
 
@@ -26,9 +26,12 @@ TEST_DATA_FILES = {
     "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/": "records.aarnet",
 
     # TEST_ARCHIVE
-    PS_BASE_URL + "esmond/perfsonar/archive/": "archive.json",
+    _ESMOND_BASE_URL + "esmond/perfsonar/archive/": "archive.json",
 }
 
+@pytest.fixture
+def esmond_base_url():
+    return _ESMOND_BASE_URL
 
 @pytest.fixture
 def empty_db():
@@ -75,7 +78,7 @@ def db_with_test_data(empty_db):
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    for url, filename in TEST_DATA_FILES.items():
+    for url, filename in _TEST_DATA_FILES.items():
 
         if session.query(perfsonar_data.model.Doc) \
                 .filter(perfsonar_data.model.Doc.url == url) \
@@ -110,11 +113,11 @@ def test_testdata(db_with_test_data):
     test_urls = { r.url for r in session.query(
         perfsonar_data.model.Doc).all() }
 
-    assert test_urls == set(TEST_DATA_FILES.keys())
+    assert test_urls == set(_TEST_DATA_FILES.keys())
 
 
-# PS_BASE_URL = "http://192.87.30.58/"
-def test_esmond_group_by_participants(db_with_test_data):
+def test_esmond_group_by_participants(
+        db_with_test_data, esmond_base_url):
     """
     sanity test on group_by_participants
 
@@ -124,7 +127,7 @@ def test_esmond_group_by_participants(db_with_test_data):
     """
     proxy.init_db_engine(dsn=db_with_test_data)
 
-    tests = esmond.load_tests(PS_BASE_URL)
+    tests = esmond.load_tests(esmond_base_url)
     num_participants = 0
     for g in esmond.group_by_participants(tests):
         logging.info("participants: " + str(g["participants"]))
@@ -134,7 +137,7 @@ def test_esmond_group_by_participants(db_with_test_data):
     assert num_participants > 0, "test data contained participiants, but none found"
 
 
-def test_esmond_group_by_tool(db_with_test_data):
+def test_esmond_group_by_tool(db_with_test_data, esmond_base_url):
     """
     sanity test on group_by_tool
 
@@ -144,7 +147,7 @@ def test_esmond_group_by_tool(db_with_test_data):
     """
     proxy.init_db_engine(dsn=db_with_test_data)
 
-    tests = esmond.load_tests(PS_BASE_URL)
+    tests = esmond.load_tests(esmond_base_url)
     num_tools = 0
     for name, tests in esmond.group_by_tool(tests).items():
         logging.info("'%s': %d tests" % (name, len(tests)))
