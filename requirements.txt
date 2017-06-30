@@ -1,3 +1,4 @@
 requests
 alembic
 pytest
+pytest-cov
