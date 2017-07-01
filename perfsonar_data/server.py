@@ -104,6 +104,7 @@ def main(port):
 
 
 if __name__ == "__main__":
+    # TODO: take dsn & port from cmd line
     import proxy
     dsn = "sqlite:////Users/reid/workspace/perfsonar-data/perfsonar_data/test.sqlite"
     proxy.init_db_engine(dsn)
