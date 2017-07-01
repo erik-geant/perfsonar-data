@@ -3,10 +3,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-
 app = Flask("perfsonar_data")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/perfsonar-data.sqlite"
