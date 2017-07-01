@@ -52,7 +52,7 @@ def slshosts():
         url = parsed_request.get("url", _DEFAULT_SLS_BOOTSTRAP_URL)
 
     response = [_lookup_host_element_to_response_element(h)
-        for h in sls.download_lookup_data(url, db)]
+        for h in sls.download_lookup_data(url, db.session)]
 
     return Response(json.dumps(response), mimetype="application/json")
 
@@ -88,7 +88,7 @@ def esmond_participants():
         raise BadRequest("error reading 'url' from JSON request")
 
     # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
-    all_tests = esmond.load_tests(parsed_request["url"], db)
+    all_tests = esmond.load_tests(parsed_request["url"], db.session)
 
     response = [_grouped_participant_tests_element_to_response_element(g)
                 for g in esmond.group_by_participants(all_tests)]
