@@ -10,6 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask("perfsonar_data")
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/perfsonar-data.sqlite"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # this is actually the default, but maybe worth being explicit
 ALEMBIC_MIGRATION_DIRECTORY = os.path.join(
     os.path.dirname(__file__),
