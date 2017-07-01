@@ -1,10 +1,10 @@
 import json
-from flask import Flask, request, Response
+
+from flask import request, Response
 from werkzeug.exceptions import BadRequest
+
+from perfsonar_data.app import app, db
 from perfsonar_data import sls, esmond
-
-app = Flask(__name__)
-
 
 _DEFAULT_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
 
@@ -52,7 +52,7 @@ def slshosts():
         url = parsed_request.get("url", _DEFAULT_SLS_BOOTSTRAP_URL)
 
     response = [_lookup_host_element_to_response_element(h)
-        for h in sls.download_lookup_data(url)]
+        for h in sls.download_lookup_data(url, db)]
 
     return Response(json.dumps(response), mimetype="application/json")
 
@@ -88,13 +88,12 @@ def esmond_participants():
         raise BadRequest("error reading 'url' from JSON request")
 
     # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
-    grouped_tests = esmond.group_by_participants(esmond.load_tests(parsed_request["url"]))
+    all_tests = esmond.load_tests(parsed_request["url"], db)
 
     response = [_grouped_participant_tests_element_to_response_element(g)
-                for g in grouped_tests]
+                for g in esmond.group_by_participants(all_tests)]
 
     return Response(json.dumps(response), mimetype="application/json")
-
 
 
 def main(port):
@@ -105,7 +104,4 @@ def main(port):
 
 if __name__ == "__main__":
     # TODO: take dsn & port from cmd line
-    import proxy
-    dsn = "sqlite:////Users/reid/workspace/perfsonar-data/perfsonar_data/test.sqlite"
-    proxy.init_db_engine(dsn)
     main(8234)

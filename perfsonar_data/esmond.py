@@ -3,13 +3,14 @@ from perfsonar_data import proxy
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
 
-def load_tests(ps_base_url):
+def load_tests(ps_base_url, db):
     """
     loads the esmond test archive summary
     :param ps_base_url: perfSONAR base url
+    :param db: db object used by proxy module
     :return: list of test structs
     """
-    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH)
+    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH, db)
     assert isinstance(archive, (list, tuple))
     return archive
     

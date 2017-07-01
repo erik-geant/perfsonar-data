@@ -2,14 +2,13 @@ import logging
 from perfsonar_data import proxy
 
 
-def _load_sls_mirrors(url):
+def _load_sls_mirrors(hosts):
     """
     load url's of hosts containing ps service lists
 
-    :param url:
+    :param hosts: data created from json data downloaded from sls bootstrap url
     :return:
     """
-    hosts = proxy.load_url_json(url)
     assert "hosts" in hosts
     for h in hosts["hosts"]:
         assert {"locator", "priority", "status"} <= set(h.keys())
@@ -21,7 +20,7 @@ def _service_elements_by_type(service_data, type):
     return [e for e in service_data if type in e["type"]]
 
 
-def _download_parse_lookup_data(url):
+def _parse_lookup_data(service_data):
     """
     download and parse service data
 
@@ -32,12 +31,10 @@ def _download_parse_lookup_data(url):
         "service": list of elements of type "service" with the same client-uuid
         "psmetadata": list of elements of type "psmetadata" with the same client-uuid
 
-    :param url:
+    :param service_data: object created from json data downloaded from an sls host
     :return:
     """
-    service_data = proxy.load_url_json(url)
     assert isinstance(service_data, (list,tuple))
-    logging.debug("%s elements: %d" % (url, len(service_data)))
 
     clients = {}
     for e in service_data:
@@ -80,17 +77,20 @@ def get_service_location(service_element):
     return location
 
 
-def download_lookup_data(sls_bootstrap_url):
+def download_lookup_data(sls_bootstrap_url, db):
     """
     download mirror hosts from the bootstrap url, and then for each
     download and parse the service list
 
     :param sls_bootstrap_url:
+    :param db: some kind of db object
     :return: list of all hosts discovered on each mirror listed by the bootstrap url
     """
     hosts = []
-    for mirror_url in _load_sls_mirrors(sls_bootstrap_url):
-        mirror_hosts = _download_parse_lookup_data(mirror_url)
+    raw_sls_mirror_data = proxy.load_url_json(sls_bootstrap_url, db)
+    for mirror_url in _load_sls_mirrors(raw_sls_mirror_data):
+        raw_service_data = proxy.load_url_json(mirror_url, db)
+        mirror_hosts = _parse_lookup_data(raw_service_data)
         logging.debug("downloaded from %s: %d" % (mirror_url, len(mirror_hosts)))
         hosts.extend(mirror_hosts)
     return hosts
