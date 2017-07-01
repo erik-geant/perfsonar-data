@@ -60,9 +60,10 @@ def db_with_test_data(empty_db):
             continue
 
 
-        with open(os.path.join(data.DATA_PATH, filename)) as f:
+        with open(os.path.join(data.DATA_PATH, filename),
+                  encoding="utf-8") as f:
             session.add(perfsonar_data.model.Doc(
-                url=unicode(url), doc=f.read().decode("utf-8")))
+                url=str(url), doc=f.read()))
 
         session.commit()
 

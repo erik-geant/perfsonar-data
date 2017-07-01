@@ -1,12 +1,7 @@
 from contextlib import contextmanager
-import filecmp
 import json
-import os
-import pkg_resources
-from StringIO import StringIO
 import shutil
 import tempfile
-import zipfile
 
 import pytest
 

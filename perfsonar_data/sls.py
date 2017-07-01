@@ -1,5 +1,5 @@
 import logging
-import proxy
+from perfsonar_data import proxy
 
 
 def _load_sls_mirrors(url):

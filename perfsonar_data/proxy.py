@@ -5,7 +5,7 @@ import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import model
+from perfsonar_data import model
 
 
 _engine = None

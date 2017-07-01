@@ -1,8 +1,7 @@
 import json
 from flask import Flask, request, Response
 from werkzeug.exceptions import BadRequest
-import sls
-import esmond
+from perfsonar_data import sls, esmond
 
 app = Flask(__name__)
 
@@ -85,7 +84,7 @@ def esmond_participants():
     parsed_request = request.get_json()
     if parsed_request is None \
             or "url" not in parsed_request \
-            or not isinstance(parsed_request["url"], (str, unicode)):
+            or not isinstance(parsed_request["url"], str):
         raise BadRequest("error reading 'url' from JSON request")
 
     # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
