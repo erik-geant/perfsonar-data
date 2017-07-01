@@ -1,5 +1,7 @@
 requests
 alembic
 flask
+flask-sqlalchemy
+flask-migrate
 pytest
 pytest-cov

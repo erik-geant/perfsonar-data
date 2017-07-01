@@ -8,6 +8,9 @@ setup(
     install_requires=[
         "requests",
         "alembic",
-        "flask"
+        "flask",
+        "flask-sqlalchemy",
+        "flask-migrate"
+
     ]
 )
