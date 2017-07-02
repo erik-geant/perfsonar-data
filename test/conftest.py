@@ -1,75 +1,73 @@
 import os
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
 import perfsonar_data
-import data
+from perfsonar_data import model
+
+import sys
+sys.path.append(os.path.dirname(__file__))
+import testdata
 
 @pytest.fixture
 def empty_db():
     """
-    yields a dsn to a temporary database
+    yields a sqlalchemy session to a temporary database
 
     the temporary database file is deleted once context mgmt is complete
 
     :return: dsn (string)
     """
     import tempfile
-    from alembic.config import Config
-    from alembic import command
 
     fd, name = tempfile.mkstemp()
     os.close(fd)
 
     dsn = "sqlite:///" + name  # careful: assumes linux separators
+    os.environ["SQLALCHEMY_DATABASE_URI"] = dsn
 
-    cfg = Config(os.path.join(perfsonar_data.__path__[0], "alembic.ini"))
-    cfg.set_main_option("script_location",
-                        os.path.join(perfsonar_data.__path__[0], "migrations"))
-    cfg.set_main_option("sqlalchemy.url", dsn)
-    command.upgrade(cfg, revision="head")
+    from perfsonar_data import app_factory
+    import flask_migrate
 
-    try:
-        yield dsn
-    finally:
-        # don't fill the disk with tmp db files
-        os.unlink(name)
+    tmp_test_app = app_factory.create_app(dsn)
+
+    with tmp_test_app.app_context():
+        flask_migrate.upgrade(
+            directory=os.path.join(perfsonar_data.__path__[0], "migrations"),
+            revision="head")
+
+        try:
+            yield {
+                "app": tmp_test_app,
+                "session": app_factory.db.session
+            }
+        finally:
+           os.unlink(name)  # don't fill the disk with tmp db files
 
 
 @pytest.fixture
 def db_with_test_data(empty_db):
     """
-    returns a dsn to a temporary database
+    returns a session connected to a temporary database
 
-    :param empty_db:
-    :return: dsn (string)
+    :param empty_db: a sqlalchemy session object
+    :return: the same session
     """
 
-    engine = create_engine(empty_db)
-    # engine = create_engine(empty_db, echo=True)
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
-    for url, filename in data.TEST_DATA_FILES.items():
+    for url, filename in testdata.TEST_DATA_FILES.items():
 
-        if session.query(perfsonar_data.model.Doc) \
-                .filter(perfsonar_data.model.Doc.url == url) \
+        if empty_db["session"].query(model.Doc) \
+                .filter(model.Doc.url == url) \
                 .first() is not None:
             continue
 
 
-        with open(os.path.join(data.DATA_PATH, filename),
+        with open(os.path.join(testdata.DATA_PATH, filename),
                   encoding="utf-8") as f:
-            session.add(perfsonar_data.model.Doc(
+            empty_db["session"].add(model.Doc(
                 url=str(url), doc=f.read()))
 
-        session.commit()
-
-    session.close()
-    engine.dispose()
+            empty_db["session"].commit()
 
     return empty_db
-
-

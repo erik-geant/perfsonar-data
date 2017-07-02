@@ -1,10 +1,11 @@
 import logging
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from perfsonar_data import model
 
-import perfsonar_data
-import data
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
+import testdata
 
 logging.basicConfig(level=logging.INFO)
 
@@ -12,15 +13,11 @@ logging.basicConfig(level=logging.INFO)
 def test_testdata(db_with_test_data):
     """
     basic sanity test on the test db creation
-    :param db_with_test_data: dsn of temporary db
+    :param db_with_test_data: flask app and sqlalchemy session instances
     """
-    engine = create_engine(db_with_test_data)
-    # engine = create_engine(db_with_test_data, echo=True)
-    Session = sessionmaker(bind=engine)
-    session = Session()
 
-    test_urls = { r.url for r in session.query(
-        perfsonar_data.model.Doc).all() }
+    test_urls = {r.url for r in
+                 db_with_test_data["session"].query(model.Doc).all()}
 
-    assert test_urls == set(data.TEST_DATA_FILES.keys())
+    assert test_urls == set(testdata.TEST_DATA_FILES.keys())
 
