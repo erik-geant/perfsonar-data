@@ -1,15 +1,7 @@
-from contextlib import contextmanager
 import json
-import shutil
-import tempfile
-
 import pytest
 
-
-import sys
-import os
-sys.path.append(os.path.dirname(__file__))
-import testdata
+from . import data
 
 _HEADERS = {
     "Content-type": "application/json",
@@ -22,7 +14,7 @@ def client(db_with_test_data):
     return db_with_test_data["app"].test_client()
 
 def test_slshosts(client):
-    payload = { "url": testdata.SLS_BOOTSTRAP_URL }
+    payload = { "url": data.SLS_BOOTSTRAP_URL }
     rv = client.post(
         "/slshosts",
         data=json.dumps(payload),
@@ -35,7 +27,7 @@ def test_slshosts(client):
 
 
 def test_archive_participants(client):
-    payload = { "url": testdata.ESMOND_BASE_URL }
+    payload = { "url": data.ESMOND_BASE_URL }
     rv = client.post(
         "/esmond/participants",
         data=json.dumps(payload),

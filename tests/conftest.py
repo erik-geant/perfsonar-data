@@ -5,9 +5,7 @@ import pytest
 import perfsonar_data
 from perfsonar_data import model
 
-import sys
-sys.path.append(os.path.dirname(__file__))
-import testdata
+from . import data
 
 @pytest.fixture
 def empty_db():
@@ -55,7 +53,7 @@ def db_with_test_data(empty_db):
     """
 
 
-    for url, filename in testdata.TEST_DATA_FILES.items():
+    for url, filename in data.TEST_DATA_FILES.items():
 
         if empty_db["session"].query(model.Doc) \
                 .filter(model.Doc.url == url) \
@@ -63,7 +61,7 @@ def db_with_test_data(empty_db):
             continue
 
 
-        with open(os.path.join(testdata.DATA_PATH, filename),
+        with open(os.path.join(data.DATA_PATH, filename),
                   encoding="utf-8") as f:
             empty_db["session"].add(model.Doc(
                 url=str(url), doc=f.read()))
