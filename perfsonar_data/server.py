@@ -1,12 +1,18 @@
+"""
+app request handlers
+"""
 import json
-from flask import Flask, request, Response
+
+from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
+
+from perfsonar_data.model import db
 from perfsonar_data import sls, esmond
 
-app = Flask(__name__)
-
-
 _DEFAULT_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
+
+server = Blueprint("psdata", __name__)
+
 
 def _lookup_host_element_to_response_element(host):
     """
@@ -36,7 +42,7 @@ def _lookup_host_element_to_response_element(host):
     return element
 
 
-@app.route("/slshosts", methods=["POST"])
+@server.route("/slshosts", methods=["POST"])
 def slshosts():
 
     if not request.accept_mimetypes.accept_json:
@@ -52,7 +58,7 @@ def slshosts():
         url = parsed_request.get("url", _DEFAULT_SLS_BOOTSTRAP_URL)
 
     response = [_lookup_host_element_to_response_element(h)
-        for h in sls.download_lookup_data(url)]
+        for h in sls.download_lookup_data(url, db.session)]
 
     return Response(json.dumps(response), mimetype="application/json")
 
@@ -72,7 +78,7 @@ def _grouped_participant_tests_element_to_response_element(e):
     return r
 
 
-@app.route("/esmond/participants", methods=["POST"])
+@server.route("/esmond/participants", methods=["POST"])
 def esmond_participants():
 
     if not request.accept_mimetypes.accept_json:
@@ -88,24 +94,10 @@ def esmond_participants():
         raise BadRequest("error reading 'url' from JSON request")
 
     # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
-    grouped_tests = esmond.group_by_participants(esmond.load_tests(parsed_request["url"]))
+    all_tests = esmond.load_tests(parsed_request["url"], db.session)
 
     response = [_grouped_participant_tests_element_to_response_element(g)
-                for g in grouped_tests]
+                for g in esmond.group_by_participants(all_tests)]
 
     return Response(json.dumps(response), mimetype="application/json")
 
-
-
-def main(port):
-    app.run(
-        host="0.0.0.0",
-        port=port)
-
-
-if __name__ == "__main__":
-    # TODO: take dsn & port from cmd line
-    import proxy
-    dsn = "sqlite:////Users/reid/workspace/perfsonar-data/perfsonar_data/test.sqlite"
-    proxy.init_db_engine(dsn)
-    main(8234)

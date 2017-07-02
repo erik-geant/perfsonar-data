@@ -3,13 +3,14 @@ from perfsonar_data import proxy
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
 
-def load_tests(ps_base_url):
+def load_tests(ps_base_url, session):
     """
     loads the esmond test archive summary
     :param ps_base_url: perfSONAR base url
+    :param session: a sqlalchemy session instance
     :return: list of test structs
     """
-    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH)
+    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH, session)
     assert isinstance(archive, (list, tuple))
     return archive
     
@@ -73,23 +74,3 @@ def group_by_tool(list_of_tests):
             result[tool_name] = []
         result[tool_name].append(t)
     return result
-
-
-# if __name__ == "__main__":
-#
-#     import logging
-#     logging.basicConfig(level=logging.DEBUG)
-#
-#     # PS_BASE_URL = "http://192.87.30.58/"
-#     PS_BASE_URL = "http://158.125.250.70/"
-#
-#
-#     for g in group_by_participants(load_tests(PS_BASE_URL)):
-#         print "participants: " + str(g["participants"])
-#         print "   num tests: %d" % len(g["tests"])
-#
-#     for n,tests in group_by_tool(load_tests(PS_BASE_URL)).items():
-#         print "%s: %d" % (n, len(tests))
-#     # for p in _get_test_participants(_load_tests(PS_BASE_URL)):
-#     #
-#     #     print p

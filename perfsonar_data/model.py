@@ -1,9 +1,11 @@
 from sqlalchemy import Column, Integer, Text
-from sqlalchemy.ext.declarative import declarative_base
+from flask_sqlalchemy import SQLAlchemy
 
-Base = declarative_base()
+# cf. http://flask.pocoo.org/docs/0.12/patterns/appfactories/
+db = SQLAlchemy()
 
-class Doc(Base):
+
+class Doc(db.Model):
     __tablename__ = "docs"
     id = Column(Integer, primary_key=True)
     url = Column(Text, nullable=False)
