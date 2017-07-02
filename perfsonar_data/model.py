@@ -1,6 +1,9 @@
 from sqlalchemy import Column, Integer, Text
+from flask_sqlalchemy import SQLAlchemy
 
-from perfsonar_data.app import app, db
+# cf. http://flask.pocoo.org/docs/0.12/patterns/appfactories/
+db = SQLAlchemy()
+
 
 class Doc(db.Model):
     __tablename__ = "docs"

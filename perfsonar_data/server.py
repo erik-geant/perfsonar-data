@@ -1,12 +1,18 @@
+"""
+app request handlers
+"""
 import json
 
-from flask import request, Response
+from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-from perfsonar_data.app import app, db
+from perfsonar_data.model import db
 from perfsonar_data import sls, esmond
 
 _DEFAULT_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
+
+server = Blueprint("psdata", __name__)
+
 
 def _lookup_host_element_to_response_element(host):
     """
@@ -36,7 +42,7 @@ def _lookup_host_element_to_response_element(host):
     return element
 
 
-@app.route("/slshosts", methods=["POST"])
+@server.route("/slshosts", methods=["POST"])
 def slshosts():
 
     if not request.accept_mimetypes.accept_json:
@@ -72,7 +78,7 @@ def _grouped_participant_tests_element_to_response_element(e):
     return r
 
 
-@app.route("/esmond/participants", methods=["POST"])
+@server.route("/esmond/participants", methods=["POST"])
 def esmond_participants():
 
     if not request.accept_mimetypes.accept_json:
@@ -95,13 +101,3 @@ def esmond_participants():
 
     return Response(json.dumps(response), mimetype="application/json")
 
-
-def main(port):
-    app.run(
-        host="0.0.0.0",
-        port=port)
-
-
-if __name__ == "__main__":
-    # TODO: take dsn & port from cmd line
-    main(8234)

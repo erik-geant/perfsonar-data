@@ -74,23 +74,3 @@ def group_by_tool(list_of_tests):
             result[tool_name] = []
         result[tool_name].append(t)
     return result
-
-
-# if __name__ == "__main__":
-#
-#     import logging
-#     logging.basicConfig(level=logging.DEBUG)
-#
-#     # PS_BASE_URL = "http://192.87.30.58/"
-#     PS_BASE_URL = "http://158.125.250.70/"
-#
-#
-#     for g in group_by_participants(load_tests(PS_BASE_URL)):
-#         print "participants: " + str(g["participants"])
-#         print "   num tests: %d" % len(g["tests"])
-#
-#     for n,tests in group_by_tool(load_tests(PS_BASE_URL)).items():
-#         print "%s: %d" % (n, len(tests))
-#     # for p in _get_test_participants(_load_tests(PS_BASE_URL)):
-#     #
-#     #     print p

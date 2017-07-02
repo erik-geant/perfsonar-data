@@ -1,18 +1,18 @@
-import os
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+"""
+entry point that can be invoked as:
 
-_DEFAULT_DSN = "sqlite:////tmp/perfsonar-data.sqlite"
+    FLASK_APP=perfsonar_data.app flask run
 
-app = Flask("perfsonar_data")
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "SQLALCHEMY_DATABASE_URI", _DEFAULT_DSN)
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# this is actually the default, but maybe worth being explicit
-ALEMBIC_MIGRATION_DIRECTORY = os.path.join(
-    os.path.dirname(__file__),
-    "migrations")
+or just by running the module directly
+"""
+from perfsonar_data import app_factory
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db, directory=ALEMBIC_MIGRATION_DIRECTORY)
+# TODO: take dsn & port from somewhere ...?
+
+app = app_factory.create_app()
+
+if __name__ == "__main__":
+    app.run(
+        host="0.0.0.0",
+        port=8234)
+
