@@ -120,3 +120,48 @@ def esmond_participants():
                 for g in esmond.group_by_participants(all_tests)]
 
     return Response(json.dumps(response), mimetype="application/json")
+
+
+@server.route("/esmond/series", methods=["POST"])
+def esmond_time_series():
+
+    if not request.accept_mimetypes.accept_json:
+        return Response(
+            response="response will be json",
+            status=406,
+            mimetype="text/html")
+
+    parsed_request = request.get_json()
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "url": {"type": "string"},
+            "id": {"type": "string"},
+            "keys": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string"}
+            }
+        },
+        "required": ["url", "id"]
+    }
+
+    try:
+        validate(parsed_request, schema)
+    except ValidationError as e:
+        raise BadRequest(str(e))
+
+    if "keys" in parsed_request:
+        response = esmond.get_time_series(
+            esmond_base_url=parsed_request["url"],
+            summary_id=parsed_request["id"],
+            session=db.session,
+            keys=set(parsed_request["keys"]))
+    else:
+        response = esmond.get_time_series(
+            esmond_base_url=parsed_request["url"],
+            summary_id=parsed_request["id"],
+            session=db.session)
+
+    return Response(json.dumps(response), mimetype="application/json")

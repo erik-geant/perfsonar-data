@@ -1,3 +1,4 @@
+from numbers import Number
 from perfsonar_data import proxy
 
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
@@ -74,3 +75,43 @@ def group_by_tool(list_of_tests):
             result[tool_name] = []
         result[tool_name].append(t)
     return result
+
+
+def get_time_series(esmond_base_url, summary_id, session, keys=set()):
+    # TODO: change assertions below to something propagated back to the client
+
+    data = proxy.load_url_json(esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id, session)
+    assert isinstance(data, (list, tuple))
+
+    result = dict([(k,[]) for k in keys])
+    if not result:
+        result["default"] = []
+
+    for m in data:
+
+        assert "ts" in m
+
+        if isinstance(m["val"], Number):
+            # this means the summary is a simple list of ts/val pairs
+            # we can only return a single default list
+            assert "default" in result, \
+                "measurement data contains no subkeys"
+            result["default"].append(
+                {"ts": m["ts"], "value": m["val"]})
+        elif isinstance(m["val"], dict):
+            # add the requested values to the reult
+            assert keys <= set(m["val"].keys()), \
+                "a measurement data point is missing following keys: " \
+                ", ".join(keys - set(m["val"].keys()))
+            for k in keys:
+                assert isinstance(m["val"][k], Number), \
+                    "measurement data for '%s' is not a Number" % k
+                result[k].append(
+                    {"ts": m["ts"], "value": m["val"][k]})
+        else:
+            assert False, \
+                "got measurement 'val' of unexpected type '%s'" \
+                % str(type(m["val"]))
+
+    return result
+
