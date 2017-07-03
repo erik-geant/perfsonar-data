@@ -37,3 +37,21 @@ def test_archive_participants(client):
 
     response = json.loads(rv.data)
     assert len(response) > 0  # TODO: a better test on the response
+
+
+def test_archive_participants_no_payload(client):
+    rv = client.post(
+        "/esmond/participants",
+        headers=_HEADERS)
+
+    assert rv.status_code == 400
+
+
+def test_archive_participants_bad_payload(client):
+    payload = { "url1": data.ESMOND_BASE_URL }
+    rv = client.post(
+        "/esmond/participants",
+        data=json.dumps(payload),
+        headers=_HEADERS)
+
+    assert rv.status_code == 400

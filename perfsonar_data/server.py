@@ -3,6 +3,7 @@ app request handlers
 """
 import json
 
+from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
@@ -51,10 +52,20 @@ def slshosts():
             status=406,
             mimetype="text/html")
 
-    parsed_request = request.get_json()
+    parsed_request = request.get_json(silent=True)
     if parsed_request is  None:
         url = _DEFAULT_SLS_BOOTSTRAP_URL
     else:
+        schema = {
+            "type": "object",
+            "properties": {
+                "url": {"type": "string"}
+            }
+        }
+        try:
+            validate(parsed_request, schema)
+        except ValidationError as e:
+            raise BadRequest(str(e))
         url = parsed_request.get("url", _DEFAULT_SLS_BOOTSTRAP_URL)
 
     response = [_lookup_host_element_to_response_element(h)
@@ -88,10 +99,19 @@ def esmond_participants():
             mimetype="text/html")
 
     parsed_request = request.get_json()
-    if parsed_request is None \
-            or "url" not in parsed_request \
-            or not isinstance(parsed_request["url"], str):
-        raise BadRequest("error reading 'url' from JSON request")
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "url": {"type": "string"}
+        },
+        "required": ["url"]
+    }
+
+    try:
+        validate(parsed_request, schema)
+    except ValidationError as e:
+        raise BadRequest(str(e))
 
     # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
     all_tests = esmond.load_tests(parsed_request["url"], db.session)
@@ -100,4 +120,3 @@ def esmond_participants():
                 for g in esmond.group_by_participants(all_tests)]
 
     return Response(json.dumps(response), mimetype="application/json")
-
