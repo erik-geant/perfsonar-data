@@ -58,16 +58,8 @@ def test_archive_participants_bad_payload(client):
 
     assert rv.status_code == 400
 
-    # "url": {"type": "string"},
-    # "id": {"type" "string"},
-    # "keys": {
-    #     "type": "array",
-    #     "minItems": 1,
-    #     "items": {"type": "string"}
-    # }
-    #
 
-def TIME_SERIES_RESPONSE_SCHEMA(keys=["default"]):
+def _TIME_SERIES_RESPONSE_SCHEMA(keys=["default"]):
     ts_schema = {
         "type": "array",
         "items": {
@@ -106,7 +98,7 @@ def test_time_series(client):
     assert rv.status_code == 200
 
     response = json.loads(rv.data)
-    validate(response, TIME_SERIES_RESPONSE_SCHEMA())
+    validate(response, _TIME_SERIES_RESPONSE_SCHEMA())
 
 
 def test_time_series_keys(client):
@@ -124,4 +116,4 @@ def test_time_series_keys(client):
     assert rv.status_code == 200
 
     response = json.loads(rv.data)
-    validate(response, TIME_SERIES_RESPONSE_SCHEMA(measurement_keys))
+    validate(response, _TIME_SERIES_RESPONSE_SCHEMA(measurement_keys))
