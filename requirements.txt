@@ -3,5 +3,6 @@ alembic
 flask
 flask-sqlalchemy
 flask-migrate
+jsonschema
 pytest
 pytest-cov

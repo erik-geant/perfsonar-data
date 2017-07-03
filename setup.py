@@ -10,7 +10,7 @@ setup(
         "alembic",
         "flask",
         "flask-sqlalchemy",
-        "flask-migrate"
-
+        "flask-migrate",
+        "jsonschema",
     ]
 )
