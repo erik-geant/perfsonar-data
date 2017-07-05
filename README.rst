@@ -72,7 +72,6 @@ Request payload is optional, but if present must be of the form:
 .. code:: json
 
   {
-    "id": "http://some.site.somewhere/entry-schema#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
@@ -144,7 +143,6 @@ Request payload must be of the form:
 .. code:: json
 
   {
-    "id": "http://some.site.somewhere/entry-schema#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
@@ -205,7 +203,6 @@ Request payload should be of the form:
 .. code:: json
 
   {
-    "id": "http://some.site.somewhere/entry-schema#",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "type": "object",
     "properties": {
