@@ -11,6 +11,45 @@ requirements
 - Python 3
 - TODO ...
 
+running
+=======
+
+1. install the package (in a ``virtualenv`` would be nice, of course)
+
+2. create a new database, if necessary
+
+.. code:: bash
+
+  FLASK_APP=perfsonar_data.app flask db upgrade
+  
+3. run the app
+
+.. code:: bash
+
+  python perfsonar_data/app
+  
+4. unit tests
+
+.. code:: bash
+
+  pip install -r requirements.txt
+  # cd somewhere the test runner will find the tests in the ``tests`` directory
+  py.test 
+  # or ...
+  py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
+
+
+notes
+-----
+
+* TODO
+
+  - runtime options, either cli or some config file
+     - db is currently hard-coded to ``/tmp/perfsonar-data.sqlite``
+     - server port is currently hard-coded to ``8234``
+  - proxy needs to expire documents (add ``expiration`` col to ``docs`` table)
+
+
 protocol
 ========
 
