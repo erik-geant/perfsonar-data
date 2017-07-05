@@ -13,7 +13,7 @@ def load_tests(ps_base_url, session):
     archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH, session)
     assert isinstance(archive, (list, tuple))
     return archive
-    
+
 
 def get_test_participants(list_of_tests):
     """
@@ -77,6 +77,7 @@ def group_by_tool(list_of_tests):
 
 
 def get_time_series(esmond_base_url, summary_id, session):
-    data = proxy.load_url_json(esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id, session)
+    data = proxy.load_url_json(
+        esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id, session)
     assert isinstance(data, (list, tuple))
     return data
