@@ -8,7 +8,7 @@ from perfsonar_data import model
 
 def load_url_json(url, session):
 
-    row = session.query(model.Doc).filter(model.Doc.url==url).first()
+    row = session.query(model.Doc).filter(model.Doc.url == url).first()
     if row is not None:
         logging.debug("proxy hit for '%s'" % url)
         return json.loads(row.doc)
@@ -25,4 +25,3 @@ def load_url_json(url, session):
 
     logging.debug("saved new document for '%s'" % url)
     return data
-

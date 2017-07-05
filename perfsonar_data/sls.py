@@ -29,12 +29,14 @@ def _parse_lookup_data(service_data):
 
         "hosts": list of elements of type "host" with the same client-uuid
         "service": list of elements of type "service" with the same client-uuid
-        "psmetadata": list of elements of type "psmetadata" with the same client-uuid
+        "psmetadata": list of elements of type "psmetadata"
+                      with the same client-uuid
 
-    :param service_data: object created from json data downloaded from an sls host
+    :param service_data: object created from json data downloaded
+                         from an sls host
     :return:
     """
-    assert isinstance(service_data, (list,tuple))
+    assert isinstance(service_data, (list, tuple))
 
     clients = {}
     for e in service_data:
@@ -69,11 +71,16 @@ def get_service_location(service_element):
     :return:
     """
     location = {}
-    location["city"] = service_element.get("location-city", [None])[0]
-    location["country"] = service_element.get("location-country", [None])[0]
-    location["latitude"] = service_element.get("location-latitude", [None])[0]
-    location["longitude"] = service_element.get("location-longitude", [None])[0]
-    location["sitename"] = service_element.get("location-sitename", [None])[0]
+    location["city"] = service_element.get(
+        "location-city", [None])[0]
+    location["country"] = service_element.get(
+        "location-country", [None])[0]
+    location["latitude"] = service_element.get(
+        "location-latitude", [None])[0]
+    location["longitude"] = service_element.get(
+        "location-longitude", [None])[0]
+    location["sitename"] = service_element.get(
+        "location-sitename", [None])[0]
     return location
 
 
@@ -84,14 +91,16 @@ def download_lookup_data(sls_bootstrap_url, session):
 
     :param sls_bootstrap_url:
     :param session: a sqlalchemy session instance
-    :return: list of all hosts discovered on each mirror listed by the bootstrap url
+    :return: list of all hosts discovered on each mirror listed
+             by the bootstrap url
     """
     hosts = []
     raw_sls_mirror_data = proxy.load_url_json(sls_bootstrap_url, session)
     for mirror_url in _load_sls_mirrors(raw_sls_mirror_data):
         raw_service_data = proxy.load_url_json(mirror_url, session)
         mirror_hosts = _parse_lookup_data(raw_service_data)
-        logging.debug("downloaded from %s: %d" % (mirror_url, len(mirror_hosts)))
+        logging.debug("downloaded from %s: %d"
+                      % (mirror_url, len(mirror_hosts)))
         hosts.extend(mirror_hosts)
     return hosts
     # print "%s clients: %d" % (mirror_url, len(clients))

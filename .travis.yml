@@ -8,3 +8,4 @@ install:
 script:
     - py.test --cov-report term --cov perfsonar_data
 #    - py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
+    - flake8 perfsonar_data --statistics

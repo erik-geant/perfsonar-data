@@ -11,7 +11,8 @@ from werkzeug.exceptions import BadRequest
 from perfsonar_data.model import db
 from perfsonar_data import sls, esmond
 
-_DEFAULT_SLS_BOOTSTRAP_URL = "http://ps-west.es.net:8096/lookup/activehosts.json"
+_DEFAULT_SLS_BOOTSTRAP_URL = \
+    "http://ps-west.es.net:8096/lookup/activehosts.json"
 
 server = Blueprint("psdata", __name__)
 
@@ -82,7 +83,8 @@ def _render_grouped_participant_tests_element_as_response_element(e):
         for event_type in t.get("event-types", []):
             for summary in event_type.get("summaries", []):
                 r["summaries"].append({
-                    "ref": summary["uri"].replace("/esmond/perfsonar/archive/", ""),
+                    "ref": summary["uri"].replace(
+                        "/esmond/perfsonar/archive/", ""),
                     "time": summary["time-updated"],
                     "type": event_type["event-type"],
                     "window": summary["summary-window"],
@@ -114,7 +116,8 @@ def esmond_participants():
     except ValidationError as e:
         raise BadRequest(str(e))
 
-    # participants = esmond.get_test_participants(esmond.load_tests(parsed_request["url"]))
+    # participants = esmond.get_test_participants(
+    #                   esmond.load_tests(parsed_request["url"]))
     all_tests = esmond.load_tests(parsed_request["url"], db.session)
 
     response = [
