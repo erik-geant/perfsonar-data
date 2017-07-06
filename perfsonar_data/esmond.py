@@ -1,6 +1,17 @@
+import time
 from perfsonar_data import proxy
 
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
+
+
+def _proxy_expires():
+    """
+    simplification: this module computes uses 5 minutes as
+                the proxy expiration time of all requests
+
+    :return: ts 300 seconds from now
+    """
+    return 300 + int(time.time())
 
 
 def load_tests(ps_base_url, session):
@@ -10,7 +21,10 @@ def load_tests(ps_base_url, session):
     :param session: a sqlalchemy session instance
     :return: list of test structs
     """
-    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH, session)
+    archive = proxy.load_url_json(
+        ps_base_url + _ESMOND_ARCHIVE_PATH,
+        session,
+        expires=_proxy_expires())
     assert isinstance(archive, (list, tuple))
     return archive
 
@@ -77,7 +91,19 @@ def group_by_tool(list_of_tests):
 
 
 def get_time_series(esmond_base_url, summary_id, session):
+    """
+    TODO: think of a nice way to use the actual timestamp
+          for this series from the archive ... maybe update
+          the proxy timestamp based on the returned data
+
+    :param esmond_base_url:
+    :param summary_id:
+    :param session:
+    :return:
+    """
     data = proxy.load_url_json(
-        esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id, session)
+        esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id,
+        session,
+        expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
     return data
