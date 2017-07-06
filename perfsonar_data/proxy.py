@@ -9,6 +9,7 @@ from perfsonar_data import model
 _24H_SECONDS = 24 * 60 * 60
 _DEFAULT_EXPIRATION = _24H_SECONDS
 
+
 def load_url_json(url, session, expires=_DEFAULT_EXPIRATION+int(time.time())):
 
     session.query(model.Doc) \
