@@ -9,6 +9,8 @@ class Doc(db.Model):
     __tablename__ = "docs"
     id = Column(Integer, primary_key=True)
     url = Column(Text, nullable=False)
+    # sqlite doesn't have datetime types
+    expires = Column(Integer, nullable=True)
     doc = Column(Text, nullable=False)
 
     def __repr__(self):
@@ -16,5 +18,5 @@ class Doc(db.Model):
             short_doc = self.doc[:20] + "..."
         else:
             short_doc = self.doc
-        return "<Doc(id=%d, url='%s' doc='%s'>" % (
-            self.id, self.url, short_doc)
+        return "<Doc(id=%d, url='%s', expires='%d', doc='%s'>" % (
+            self.id, self.url, self.expires, short_doc)
