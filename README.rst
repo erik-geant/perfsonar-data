@@ -21,20 +21,20 @@ running
 .. code:: bash
 
   FLASK_APP=perfsonar_data.app flask db upgrade
-  
+
 3. run the app
 
 .. code:: bash
 
   python perfsonar_data/app
-  
+
 4. unit tests
 
 .. code:: bash
 
   pip install -r requirements.txt
   # cd somewhere the test runner will find the tests in the ``tests`` directory
-  py.test 
+  py.test
   # or ...
   py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
 
@@ -62,10 +62,12 @@ Request must use the POST method and must contain at least the following headers
 
   Accept: application/json
   Content-type: application/json
-  
-  
+
+
 resource: /slshosts
 -------------------
+
+All the hosts
 
 Request payload is optional, but if present must be of the form:
 
@@ -138,6 +140,8 @@ Responses are json, the following is an example:
 resource: /esmond/participants
 ------------------------------
 
+All the tests running on a particular host
+
 Request payload must be of the form:
 
 .. code:: json
@@ -198,6 +202,8 @@ Responses are json, the following is an example:
 resource: /esmond/series
 ------------------------
 
+Timeseries of a particular test
+
 Request payload should be of the form:
 
 .. code:: json
@@ -245,4 +251,4 @@ Responses are json, the following is an example:
   }
 
 
-    
+
