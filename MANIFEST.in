@@ -1,0 +1,2 @@
+recursive-include esmond_helper/migrations/ *.ini *.py
+recursive-exclude tests *
