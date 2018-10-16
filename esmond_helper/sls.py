@@ -1,15 +1,14 @@
 import logging
-import proxy
+from esmond_helper import proxy
 
 
-def _load_sls_mirrors(url):
+def _load_sls_mirrors(hosts):
     """
     load url's of hosts containing ps service lists
 
-    :param url:
+    :param hosts: data created from json data downloaded from sls bootstrap url
     :return:
     """
-    hosts = proxy.load_url_json(url)
     assert "hosts" in hosts
     for h in hosts["hosts"]:
         assert {"locator", "priority", "status"} <= set(h.keys())
@@ -21,7 +20,7 @@ def _service_elements_by_type(service_data, type):
     return [e for e in service_data if type in e["type"]]
 
 
-def _download_parse_lookup_data(url):
+def _parse_lookup_data(service_data):
     """
     download and parse service data
 
@@ -30,14 +29,14 @@ def _download_parse_lookup_data(url):
 
         "hosts": list of elements of type "host" with the same client-uuid
         "service": list of elements of type "service" with the same client-uuid
-        "psmetadata": list of elements of type "psmetadata" with the same client-uuid
+        "psmetadata": list of elements of type "psmetadata"
+                      with the same client-uuid
 
-    :param url:
+    :param service_data: object created from json data downloaded
+                         from an sls host
     :return:
     """
-    service_data = proxy.load_url_json(url)
-    assert isinstance(service_data, (list,tuple))
-    logging.debug("%s elements: %d" % (url, len(service_data)))
+    assert isinstance(service_data, (list, tuple))
 
     clients = {}
     for e in service_data:
@@ -72,26 +71,36 @@ def get_service_location(service_element):
     :return:
     """
     location = {}
-    location["city"] = service_element.get("location-city", [None])[0]
-    location["country"] = service_element.get("location-country", [None])[0]
-    location["latitude"] = service_element.get("location-latitude", [None])[0]
-    location["longitude"] = service_element.get("location-longitude", [None])[0]
-    location["sitename"] = service_element.get("location-sitename", [None])[0]
+    location["city"] = service_element.get(
+        "location-city", [None])[0]
+    location["country"] = service_element.get(
+        "location-country", [None])[0]
+    location["latitude"] = service_element.get(
+        "location-latitude", [None])[0]
+    location["longitude"] = service_element.get(
+        "location-longitude", [None])[0]
+    location["sitename"] = service_element.get(
+        "location-sitename", [None])[0]
     return location
 
 
-def download_lookup_data(sls_bootstrap_url):
+def download_lookup_data(sls_bootstrap_url, session):
     """
     download mirror hosts from the bootstrap url, and then for each
     download and parse the service list
 
     :param sls_bootstrap_url:
-    :return: list of all hosts discovered on each mirror listed by the bootstrap url
+    :param session: a sqlalchemy session instance
+    :return: list of all hosts discovered on each mirror listed
+             by the bootstrap url
     """
     hosts = []
-    for mirror_url in _load_sls_mirrors(sls_bootstrap_url):
-        mirror_hosts = _download_parse_lookup_data(mirror_url)
-        logging.debug("downloaded from %s: %d" % (mirror_url, len(mirror_hosts)))
+    raw_sls_mirror_data = proxy.load_url_json(sls_bootstrap_url, session)
+    for mirror_url in _load_sls_mirrors(raw_sls_mirror_data):
+        raw_service_data = proxy.load_url_json(mirror_url, session)
+        mirror_hosts = _parse_lookup_data(raw_service_data)
+        logging.debug("downloaded from %s: %d"
+                      % (mirror_url, len(mirror_hosts)))
         hosts.extend(mirror_hosts)
     return hosts
     # print "%s clients: %d" % (mirror_url, len(clients))

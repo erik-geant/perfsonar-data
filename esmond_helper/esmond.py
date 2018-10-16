@@ -1,18 +1,33 @@
-import proxy
+import time
+from esmond_helper import proxy
 
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
 
-def load_tests(ps_base_url):
+def _proxy_expires():
+    """
+    simplification: this module computes uses 5 minutes as
+                the proxy expiration time of all requests
+
+    :return: ts 300 seconds from now
+    """
+    return 300 + int(time.time())
+
+
+def load_tests(ps_base_url, session):
     """
     loads the esmond test archive summary
     :param ps_base_url: perfSONAR base url
+    :param session: a sqlalchemy session instance
     :return: list of test structs
     """
-    archive = proxy.load_url_json(ps_base_url + _ESMOND_ARCHIVE_PATH)
+    archive = proxy.load_url_json(
+        ps_base_url + _ESMOND_ARCHIVE_PATH,
+        session,
+        expires=_proxy_expires())
     assert isinstance(archive, (list, tuple))
     return archive
-    
+
 
 def get_test_participants(list_of_tests):
     """
@@ -20,15 +35,15 @@ def get_test_participants(list_of_tests):
     is a dict with format:
         {"source": <address>, "destination": <address>}
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: list of unique participant dicts
     """
-    list_of_participants = [ {
+    list_of_participants = [{
         "source": t["source"],
         "destination": t["destination"]
-        } for t in list_of_tests ]
+        } for t in list_of_tests]
     # frozenset(dict.items) returns a hashable representation of the dict
-    partset = { frozenset(p.items()) for p in list_of_participants }
+    partset = {frozenset(p.items()) for p in list_of_participants}
     return [dict(p) for p in partset]
 
 
@@ -38,7 +53,7 @@ def group_by_participants(list_of_tests):
         "participants": {"source": <address>, "destination": <address>}
         "tests": list of test elements with the same participants
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: list of tests, grouped by participant
     """
     result = {}
@@ -63,7 +78,7 @@ def group_by_tool(list_of_tests):
     returns a dict that groups tests by "tool-name", keys
     are tool-name and values are the corresponding test dicts
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: dict with items (tool name, list of tests)
     """
     result = {}
@@ -75,21 +90,20 @@ def group_by_tool(list_of_tests):
     return result
 
 
-if __name__ == "__main__":
+def get_time_series(esmond_base_url, summary_id, session):
+    """
+    TODO: think of a nice way to use the actual timestamp
+          for this series from the archive ... maybe update
+          the proxy timestamp based on the returned data
 
-    import logging
-    logging.basicConfig(level=logging.DEBUG)
-
-    # PS_BASE_URL = "http://192.87.30.58/"
-    PS_BASE_URL = "http://158.125.250.70/"
-
-
-    for g in group_by_participants(load_tests(PS_BASE_URL)):
-        print "participants: " + str(g["participants"])
-        print "   num tests: %d" % len(g["tests"])
-
-    for n,tests in group_by_tool(load_tests(PS_BASE_URL)).items():
-        print "%s: %d" % (n, len(tests))
-    # for p in _get_test_participants(_load_tests(PS_BASE_URL)):
-    #
-    #     print p
+    :param esmond_base_url:
+    :param summary_id:
+    :param session:
+    :return:
+    """
+    data = proxy.load_url_json(
+        esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id,
+        session,
+        expires=_proxy_expires())
+    assert isinstance(data, (list, tuple))
+    return data

@@ -1,3 +1,11 @@
 .idea
 *.egg-info
 *.pyc
+coverage
+.coverage
+coverage.xml
+.cache
+.DS_Store
+.tox
+htmlcov
+
