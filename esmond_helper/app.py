@@ -9,7 +9,7 @@ or just by running the module directly
 if __name__ == "__main__":
     import logging
     import sys
-    import esmond_helper 
+    import esmond_helper
 
     logging.basicConfig(
         stream=sys.stderr,
@@ -17,4 +17,3 @@ if __name__ == "__main__":
 
     app = esmond_helper.create_app()
     app.run(host="0.0.0.0", port="8234")
-

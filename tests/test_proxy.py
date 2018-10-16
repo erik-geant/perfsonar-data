@@ -17,4 +17,3 @@ def test_testdata(db_with_test_data):
                  db_with_test_data["session"].query(model.Doc).all()}
 
     assert test_urls == set(data.TEST_DATA_FILES.keys())
-

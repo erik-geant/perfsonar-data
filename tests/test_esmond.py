@@ -24,7 +24,8 @@ def test_esmond_group_by_participants(db_with_test_data):
         logging.info("  num tests: %d" % len(g["tests"]))
         num_participants += 1
 
-    assert num_participants > 0, "test data contained participiants, but none found"
+    assert num_participants > 0, \
+        "test data contained participiants, but none found"
 
 
 def test_esmond_group_by_tool(db_with_test_data):

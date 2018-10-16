@@ -18,4 +18,5 @@ def test_sls_bootstrap(db_with_test_data):
         data.SLS_BOOTSTRAP_URL,
         db_with_test_data["session"]))
     assert len(hosts) > 0, "test data should have contained at least 1 host"
-    assert len(hosts) == 1792, "bogus test just to snapshot the current test data & code state"
+    assert len(hosts) == 1792, \
+        "bogus test just to snapshot the current test data & code state"

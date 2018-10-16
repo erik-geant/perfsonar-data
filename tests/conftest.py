@@ -2,10 +2,11 @@ import os
 
 import pytest
 
-import esmond_helper 
+import esmond_helper
 from esmond_helper import model
 
 from . import data
+
 
 @pytest.fixture
 def empty_db():
@@ -39,7 +40,7 @@ def empty_db():
                 "session": esmond_helper.db.session
             }
         finally:
-           os.unlink(name)  # don't fill the disk with tmp db files
+            os.unlink(name)  # don't fill the disk with tmp db files
 
 
 @pytest.fixture
@@ -51,14 +52,12 @@ def db_with_test_data(empty_db):
     :return: the same session
     """
 
-
     for url, filename in data.TEST_DATA_FILES.items():
 
         if empty_db["session"].query(model.Doc) \
                 .filter(model.Doc.url == url) \
                 .first() is not None:
             continue
-
 
         with open(os.path.join(data.DATA_PATH, filename),
                   encoding="utf-8") as f:
