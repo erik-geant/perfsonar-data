@@ -1,6 +1,6 @@
 import logging
 
-from perfsonar_data import model
+from esmond_helper import model
 
 from . import data
 

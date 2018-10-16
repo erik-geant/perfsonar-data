@@ -2,8 +2,8 @@ import os
 
 import pytest
 
-import perfsonar_data
-from perfsonar_data import model
+import esmond_helper 
+from esmond_helper import model
 
 from . import data
 
@@ -24,14 +24,13 @@ def empty_db():
     dsn = "sqlite:///" + name  # careful: assumes linux separators
     os.environ["SQLALCHEMY_DATABASE_URI"] = dsn
 
-    from perfsonar_data import app_factory
     import flask_migrate
 
-    tmp_test_app = app_factory.create_app(dsn)
+    tmp_test_app = esmond_helper.app_factory.create_app(dsn)
 
     with tmp_test_app.app_context():
         flask_migrate.upgrade(
-            directory=os.path.join(perfsonar_data.__path__[0], "migrations"),
+            directory=os.path.join(esmond_helper.__path__[0], "migrations"),
             revision="head")
 
         try:

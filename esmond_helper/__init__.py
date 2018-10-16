@@ -5,13 +5,13 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 
-from perfsonar_data.model import db
+from esmond_helper.model import db
 
-_DEFAULT_DSN = "sqlite:////tmp/perfsonar-data.sqlite"
+_DEFAULT_DSN = "sqlite:////tmp/esmond-helper.sqlite"
 
 
 def create_app(dsn=_DEFAULT_DSN):
-    app = Flask("perfsonar_data")
+    app = Flask("esmond-helper")
     app.config["SQLALCHEMY_DATABASE_URI"] = dsn
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -26,7 +26,7 @@ def create_app(dsn=_DEFAULT_DSN):
     # migrate = Migrate(app, db, directory=ALEMBIC_MIGRATION_DIRECTORY)
 
     # cf. http://flask.pocoo.org/docs/0.10/patterns/appfactories/
-    from perfsonar_data.server import server
+    from esmond_helper.server import server
     app.register_blueprint(server)
 
     return app

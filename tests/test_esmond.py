@@ -1,8 +1,8 @@
 import logging
 
-from perfsonar_data import esmond
+from esmond_helper import esmond
 
-from . import data
+from tests import data
 
 logging.basicConfig(level=logging.INFO)
 

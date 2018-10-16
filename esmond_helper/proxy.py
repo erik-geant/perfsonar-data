@@ -4,7 +4,7 @@ import time
 
 import requests
 
-from perfsonar_data import model
+from esmond_helper import model
 
 _24H_SECONDS = 24 * 60 * 60
 _DEFAULT_EXPIRATION = _24H_SECONDS
