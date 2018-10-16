@@ -30,6 +30,7 @@
     ```bash
     $ python esmond_helper/app
     ```
+
 4. unit tests
 
     ```bash
@@ -64,6 +65,8 @@ Content-type: application/json
 ```
   
 ### resource: /slshosts
+
+All the hosts
 
 Request payload is optional, but if present must be of the form:
 
@@ -135,6 +138,8 @@ Responses are json, the following is an example:
 
 ### resource: /esmond/participants
 
+All the tests running on a particular host
+
 Request payload must be of the form:
 
 ```json
@@ -193,6 +198,8 @@ Responses are json, the following is an example:
 
 ### resource: /esmond/series
 
+Timeseries of a particular test
+
 Request payload should be of the form:
 
 ```json
@@ -240,4 +247,4 @@ Responses are json, the following is an example:
     ```
 
 
-    
+
