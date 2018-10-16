@@ -1,11 +1,8 @@
 language: python
 python:
-    - "3.6.1"
+    - "3.6"
 cache: pip
 install:
-    - pip install -r requirements.txt
-    - pip install -e .
+    - pip install tox-travis
 script:
-    - py.test --cov-report term --cov perfsonar_data
-#    - py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
-    - flake8 perfsonar_data --statistics
+    - tox
