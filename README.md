@@ -16,19 +16,21 @@
 2. create a new database, if necessary
 
     ```bash
-      FLASK_APP=esmond_helper.app flask db upgrade
+      FLASK_APP=esmond_helper flask db upgrade
     ```
 
 3. run the app
 
     ```bash
-    $ export FLASK_APP=app.py
-    $ export SETTINGS_FILENAME=settings.cfg
-    $ flask run
+    export FLASK_APP=app.py
+    export SETTINGS_FILENAME=settings.cfg
+    flask run
+    export FLASK_APP=esmond_helper.app
+    flask run
     ```
 
     ```bash
-    $ python esmond_helper/app
+    python esmond_helper/app
     ```
 
 4. unit tests
