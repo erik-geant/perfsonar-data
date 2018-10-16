@@ -1,5 +1,5 @@
 import logging
-from perfsonar_data import proxy
+from esmond_helper import proxy
 
 
 def _load_sls_mirrors(hosts):

@@ -15,8 +15,9 @@ _HEADERS = {
 def client(db_with_test_data):
     return db_with_test_data["app"].test_client()
 
+
 def test_slshosts(client):
-    payload = { "url": data.SLS_BOOTSTRAP_URL }
+    payload = {"url": data.SLS_BOOTSTRAP_URL}
     rv = client.post(
         "/slshosts",
         data=json.dumps(payload),
@@ -29,7 +30,7 @@ def test_slshosts(client):
 
 
 def test_archive_participants(client):
-    payload = { "url": data.ESMOND_BASE_URL }
+    payload = {"url": data.ESMOND_BASE_URL}
     rv = client.post(
         "/esmond/participants",
         data=json.dumps(payload),
@@ -50,7 +51,7 @@ def test_archive_participants_no_payload(client):
 
 
 def test_archive_participants_bad_payload(client):
-    payload = { "url1": data.ESMOND_BASE_URL }
+    payload = {"url1": data.ESMOND_BASE_URL}
     rv = client.post(
         "/esmond/participants",
         data=json.dumps(payload),

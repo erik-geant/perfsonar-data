@@ -1,90 +1,87 @@
+# esmond_helper
 
-perfsonar_data
-==============
-
-- Python module for exposing simplified views of perfSONAR test nodes and test data
+- Python module for exposing simplified views of perfSONAR
+  data extracted from esmond archives
 - provides an http server for querying data
 
-requirements
-============
+## requirements
 
 - Python 3
 - TODO ...
 
-running
-=======
+## running
 
 1. install the package (in a ``virtualenv`` would be nice, of course)
 
 2. create a new database, if necessary
 
-.. code:: bash
+    ```bash
+      FLASK_APP=esmond_helper.app flask db upgrade
+    ```
 
-  FLASK_APP=perfsonar_data.app flask db upgrade
-  
 3. run the app
 
-.. code:: bash
+    ```bash
+    $ export FLASK_APP=app.py
+    $ export SETTINGS_FILENAME=settings.cfg
+    $ flask run
+    ```
 
-  python perfsonar_data/app
-  
+    ```bash
+    $ python esmond_helper/app
+    ```
 4. unit tests
 
-.. code:: bash
+    ```bash
+    pip install -r requirements.txt
+    # cd somewhere the test runner will find the tests in the ``tests`` directory
+    py.test
+    # or ...
+    py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
+    ```
 
-  pip install -r requirements.txt
-  # cd somewhere the test runner will find the tests in the ``tests`` directory
-  py.test 
-  # or ...
-  py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
 
+## notes
 
-notes
------
 
 * TODO
 
   - runtime options, either cli or some config file
-     - db is currently hard-coded to ``/tmp/perfsonar-data.sqlite``
+     - db is currently hard-coded to ``/tmp/esmond-helper.sqlite``
      - server port is currently hard-coded to ``8234``
   - proxy needs to expire documents (add ``expiration`` col to ``docs`` table)
 
 
-protocol
-========
+## protocol
 
-general
--------
+### general
 
 Request must use the POST method and must contain at least the following headers:
 
-.. code:: http
-
-  Accept: application/json
-  Content-type: application/json
+```http
+Accept: application/json
+Content-type: application/json
+```
   
-  
-resource: /slshosts
--------------------
+### resource: /slshosts
 
 Request payload is optional, but if present must be of the form:
 
-.. code:: json
-
-  {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
+```json
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "properties": {
         "url": {"type": "string"}
     },
     "required": ["url", "id"]
-  }
+}
+```
 
 Responses are json, the following is an example:
 
-.. code:: json
-
-  [
+```json
+[
     {
         "host-name": [
             "137.164.28.130"
@@ -100,7 +97,7 @@ Responses are json, the following is an example:
     },
     {
         "host-name": [
-            "202.122.37.82"
+           "202.122.37.82"
         ],
         "psmetadata-ma-locator": [
             "http://202.122.37.82/esmond/perfsonar/archive",
@@ -133,29 +130,28 @@ Responses are json, the following is an example:
             "sitename": "NASA Ames NREN (LAB)"
         }
     }
-  ]
+]
+```
 
-resource: /esmond/participants
-------------------------------
+### resource: /esmond/participants
 
 Request payload must be of the form:
 
-.. code:: json
-
-  {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
-    "properties": {
-        "url": {"type": "string"}
+```json
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
+     "properties": {
+    "url": {"type": "string"}
     },
     "required": ["url", "id"]
-  }
+}
+```
 
 Responses are json, the following is an example:
 
-.. code:: json
-
-  [
+```json
+[
     {
         "destination": "62.40.106.177",
         "source": "158.125.250.70",
@@ -192,19 +188,17 @@ Responses are json, the following is an example:
             }
         ]
     }
-  ]
+]
+```
 
-
-resource: /esmond/series
-------------------------
+### resource: /esmond/series
 
 Request payload should be of the form:
 
-.. code:: json
-
-  {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "type": "object",
+```json
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "type": "object",
     "properties": {
         "url": {"type": "string"},
         "id": {"type": "string"},
@@ -215,34 +209,35 @@ Request payload should be of the form:
         }
     },
     "required": ["url", "id"]
-  }
+}
+```
 
 Responses are json, the following is an example:
 
-.. code:: json
-
-  {
-    "maximum": [
-        {
-            "ts": 1467593400,
-            "value": 24.4
-        },
-        {
-            "ts": 1467593700,
-            "value": 26.2
-        }
-    ],
-    "minimum": [
-        {
-            "ts": 1467593400,
-            "value": 24.1
-        },
-        {
-            "ts": 1467593700,
-            "value": 24.1
-        }
-    ]
-  }
+ ```json
+    {
+        "maximum": [
+            {
+                "ts": 1467593400,
+                "value": 24.4
+            },
+            {
+                "ts": 1467593700,
+                "value": 26.2
+            }
+        ],
+        "minimum": [
+            {
+                "ts": 1467593400,
+                "value": 24.1
+            },
+            {
+                "ts": 1467593700,
+                "value": 24.1
+            }
+        ]
+    }
+    ```
 
 
     

@@ -1,5 +1,5 @@
 import time
-from perfsonar_data import proxy
+from esmond_helper import proxy
 
 _ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
 
@@ -35,7 +35,7 @@ def get_test_participants(list_of_tests):
     is a dict with format:
         {"source": <address>, "destination": <address>}
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: list of unique participant dicts
     """
     list_of_participants = [{
@@ -53,7 +53,7 @@ def group_by_participants(list_of_tests):
         "participants": {"source": <address>, "destination": <address>}
         "tests": list of test elements with the same participants
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: list of tests, grouped by participant
     """
     result = {}
@@ -78,7 +78,7 @@ def group_by_tool(list_of_tests):
     returns a dict that groups tests by "tool-name", keys
     are tool-name and values are the corresponding test dicts
 
-    :param list_of_tests: list of elements from a perfsonar archive summary
+    :param list_of_tests: list of elements from an archive summary
     :return: dict with items (tool name, list of tests)
     """
     result = {}

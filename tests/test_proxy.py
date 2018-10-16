@@ -1,6 +1,6 @@
 import logging
 
-from perfsonar_data import model
+from esmond_helper import model
 
 from . import data
 
@@ -17,4 +17,3 @@ def test_testdata(db_with_test_data):
                  db_with_test_data["session"].query(model.Doc).all()}
 
     assert test_urls == set(data.TEST_DATA_FILES.keys())
-

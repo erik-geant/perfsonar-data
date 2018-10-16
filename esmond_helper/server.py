@@ -8,8 +8,8 @@ from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-from perfsonar_data.model import db
-from perfsonar_data import sls, esmond
+from esmond_helper.model import db
+from esmond_helper import sls, esmond
 
 _DEFAULT_SLS_BOOTSTRAP_URL = \
     "http://ps-west.es.net:8096/lookup/activehosts.json"

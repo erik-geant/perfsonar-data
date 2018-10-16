@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="perfsonar_data",
+    name="esmond_helper",
     version="0.1",
-    description="perfsonar data consolidation tools",
+    description="esmond helper/proxy",
     packages=find_packages(exclude=("tests",)),
     install_requires=[
         "requests",
