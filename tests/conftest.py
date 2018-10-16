@@ -26,7 +26,7 @@ def empty_db():
 
     import flask_migrate
 
-    tmp_test_app = esmond_helper.app_factory.create_app(dsn)
+    tmp_test_app = esmond_helper.create_app(dsn)
 
     with tmp_test_app.app_context():
         flask_migrate.upgrade(
@@ -36,7 +36,7 @@ def empty_db():
         try:
             yield {
                 "app": tmp_test_app,
-                "session": app_factory.db.session
+                "session": esmond_helper.db.session
             }
         finally:
            os.unlink(name)  # don't fill the disk with tmp db files
