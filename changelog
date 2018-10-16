@@ -1,2 +1,3 @@
 0.1: initial release
 0.2: include migrations in sdist
+0.3: set include_package_data in setup
