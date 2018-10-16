@@ -31,6 +31,12 @@
     python -m esmond_helper.app
     ```
 
+   or ...
+
+    ```bash
+    gunicorn "esmond_helper:create_app()" -b 0.0.0.0:5555
+    ```
+
 4. unit tests
 
     ```bash
