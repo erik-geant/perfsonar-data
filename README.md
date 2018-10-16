@@ -22,15 +22,19 @@
 3. run the app
 
     ```bash
-    export FLASK_APP=app.py
-    export SETTINGS_FILENAME=settings.cfg
-    flask run
-    export FLASK_APP=esmond_helper.app
-    flask run
+    export FLASK_APP=esmond_helper flask run
     ```
 
+   or ...
+
     ```bash
-    python esmond_helper/app
+    python -m esmond_helper.app
+    ```
+
+   or ...
+
+    ```bash
+    gunicorn "esmond_helper:create_app()" -b 0.0.0.0:5555
     ```
 
 4. unit tests
