@@ -1,6 +1,7 @@
-# perfsonar_data
+# esmond_helper
 
-- Python module for exposing simplified views of perfSONAR test nodes and test data
+- Python module for exposing simplified views of perfSONAR
+  data extracted from esmond archives
 - provides an http server for querying data
 
 ## requirements
@@ -15,7 +16,7 @@
 2. create a new database, if necessary
 
     ```bash
-      FLASK_APP=perfsonar_data.app flask db upgrade
+      FLASK_APP=esmond_helper.app flask db upgrade
     ```
 
 3. run the app
@@ -27,7 +28,7 @@
     ```
 
     ```bash
-    $ python perfsonar_data/app
+    $ python esmond_helper/app
     ```
 4. unit tests
 
@@ -46,7 +47,7 @@
 * TODO
 
   - runtime options, either cli or some config file
-     - db is currently hard-coded to ``/tmp/perfsonar-data.sqlite``
+     - db is currently hard-coded to ``/tmp/esmond-helper.sqlite``
      - server port is currently hard-coded to ``8234``
   - proxy needs to expire documents (add ``expiration`` col to ``docs`` table)
 
