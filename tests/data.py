@@ -27,6 +27,10 @@ TEST_DATA_FILES = {
         "records.ps-sls.sanren",
     "http://nsw-brwy-sls1.aarnet.net.au:8090/lookup/records/":
         "records.aarnet",
+    "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/":
+        "debrecen3-archive.json",
+    "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/055e327da6484ce5959dd51a93c93ed5/packet-count-sent/aggregations/86400":
+        "debrecen3-86400.json",
 
     # TEST_ARCHIVE
     ESMOND_BASE_URL + _ESMOND_ARCHIVE_PATH: "archive.json",
