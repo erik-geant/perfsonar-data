@@ -1,8 +1,7 @@
 """
-app request handlers
+grafana route request handlers
 """
 import json
-from numbers import Number
 import time
 
 from jsonschema import validate, ValidationError
@@ -36,7 +35,10 @@ def measurement_archive_metrics():
                 "type": "array",
                 "items": {
                     "type": "string",
-                    "enum": ["throughput", "packet-count-sent", "packet-count-lost"]
+                    "enum": [
+                        "throughput",
+                        "packet-count-sent",
+                        "packet-count-lost"]
                 }
             },
             "cacheseconds": {
@@ -56,7 +58,8 @@ def measurement_archive_metrics():
     event_types = parsed_request.get(
         "eventtypes",
         ["throughput", "packet-count-sent", "packet-count-lost"])
-    cache_seconds = parsed_request.get("cacheseconds", _DEFAULT_METRIC_LIST_EXPIRATION)
+    cache_seconds = parsed_request.get(
+        "cacheseconds", _DEFAULT_METRIC_LIST_EXPIRATION)
 
     archive_json = proxy.load_url_json(
         url="http://%s/%s" % (
@@ -83,9 +86,6 @@ def measurement_archive_metrics():
         mimetype="application/json")
 
 
-# http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/055e327da6484ce5959dd51a93c93ed5/packet-count-sent/aggregations/86400
-
-
 @server.route("/timeseries", methods=["POST"])
 @common.require_accepts_json
 def measurement_archive_timeseries():
@@ -110,8 +110,7 @@ def measurement_archive_timeseries():
         url="http://%s/%s" % (
             parsed_request["hostname"], parsed_request["tsurl"]),
         session=db.session,
-        expires=_DEFAULT_TIMESERIES_REQUEST_EXPIRATION \
-                + int(time.time()))
+        expires=_DEFAULT_TIMESERIES_REQUEST_EXPIRATION + int(time.time()))
 
     datapoints = [[x["val"], 1000 * x["ts"]] for x in timeseries_json]
     return Response(
