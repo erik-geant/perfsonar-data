@@ -22,7 +22,7 @@ def load_tests(ps_base_url, session):
     :return: list of test structs
     """
     archive = proxy.load_url_json(
-        ps_base_url + _ESMOND_ARCHIVE_PATH,
+        ps_base_url.strip("/") + _ESMOND_ARCHIVE_PATH,
         session,
         expires=_proxy_expires())
     assert isinstance(archive, (list, tuple))
