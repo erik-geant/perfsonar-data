@@ -1,7 +1,7 @@
 import time
 from esmond_helper import proxy
 
-_ESMOND_ARCHIVE_PATH = "esmond/perfsonar/archive/"
+_ESMOND_ARCHIVE_PATH = "/esmond/perfsonar/archive/"
 
 
 def _proxy_expires():
@@ -102,7 +102,7 @@ def get_time_series(esmond_base_url, summary_id, session):
     :return:
     """
     data = proxy.load_url_json(
-        esmond_base_url + _ESMOND_ARCHIVE_PATH + summary_id,
+        esmond_base_url.strip("/") + _ESMOND_ARCHIVE_PATH + summary_id,
         session,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
