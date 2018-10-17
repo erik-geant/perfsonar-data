@@ -29,7 +29,7 @@ TEST_DATA_FILES = {
         "records.aarnet",
     "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/":
         "debrecen3-archive.json",
-    "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/055e327da6484ce5959dd51a93c93ed5/packet-count-sent/aggregations/86400":
+    "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/055e327da6484ce5959dd51a93c93ed5/packet-count-sent/aggregations/86400":  # noqa: ignore=E501
         "debrecen3-86400.json",
 
     # TEST_ARCHIVE
