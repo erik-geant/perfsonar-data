@@ -1,6 +1,8 @@
 import os
+import tempfile
 
 import pytest
+import flask_migrate
 
 import esmond_helper
 from esmond_helper import model
@@ -17,17 +19,19 @@ def empty_db():
 
     :return: dsn (string)
     """
-    import tempfile
 
-    fd, name = tempfile.mkstemp()
+    fd, db_filename = tempfile.mkstemp()
     os.close(fd)
 
-    dsn = "sqlite:///" + name  # careful: assumes linux separators
-    os.environ["SQLALCHEMY_DATABASE_URI"] = dsn
+    fd, config_filename = tempfile.mkstemp()
+    os.close(fd)
 
-    import flask_migrate
+    with open(config_filename, 'w') as f:
+        # careful: assumes linux separators
+        f.write('SQLALCHEMY_DATABASE_URI = "sqlite:///%s"' % db_filename)
 
-    tmp_test_app = esmond_helper.create_app(dsn)
+    os.environ["SETTINGS_FILENAME"] = config_filename
+    tmp_test_app = esmond_helper.create_app()
 
     with tmp_test_app.app_context():
         flask_migrate.upgrade(
@@ -40,7 +44,9 @@ def empty_db():
                 "session": esmond_helper.db.session
             }
         finally:
-            os.unlink(name)  # don't fill the disk with tmp db files
+            # don't fill the disk with tmp files ...
+            os.unlink(config_filename)
+            os.unlink(db_filename)
 
 
 @pytest.fixture
