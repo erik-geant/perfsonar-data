@@ -24,8 +24,10 @@ def create_app():
     Migrate(app, db, directory=ALEMBIC_MIGRATION_DIRECTORY)
     # migrate = Migrate(app, db, directory=ALEMBIC_MIGRATION_DIRECTORY)
 
-    # cf. http://flask.pocoo.org/docs/0.10/patterns/appfactories/
-    from esmond_helper.server import server
-    app.register_blueprint(server)
+    from esmond_helper.server import server as old_server
+    app.register_blueprint(old_server)
+
+    from esmond_helper.grafana import server as grafana_server
+    app.register_blueprint(grafana_server, url_prefix="/grafana")
 
     return app
