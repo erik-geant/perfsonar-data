@@ -24,13 +24,7 @@ def test_get_grafana_api_version(client):
 
     :param client: client connected to flask app with test db
     """
-
-    payload = {
-        "hostname": "perfsonar.debrecen3.hbone.hu"
-    }
-
     rv = client.get("/grafana/version")
-
     assert rv.status_code == 200
     assert rv.data == b'0.1'
 
