@@ -21,6 +21,11 @@ _DEFAULT_TIMESERIES_REQUEST_EXPIRATION = 60
 _ESMOND_ARCHIVE_PATH = "/esmond/perfsonar/archive/"
 
 
+@server.route("/version", methods=['GET', 'POST'])
+def get_version():
+    return Response("0.1")
+
+
 @server.route("/metrics", methods=["POST"])
 @common.require_accepts_json
 def measurement_archive_metrics():
@@ -28,6 +33,7 @@ def measurement_archive_metrics():
     parsed_request = request.get_json()
 
     schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},
@@ -93,6 +99,7 @@ def measurement_archive_timeseries():
     parsed_request = request.get_json()
 
     schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},

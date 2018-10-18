@@ -3,3 +3,4 @@
 0.3: set include_package_data in setup
 0.4: read dsn from settings file
 0.5: grafana helper routes
+0.6: added /grafana/version route, updated docs
