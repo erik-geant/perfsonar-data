@@ -18,12 +18,23 @@ def client(db_with_test_data):
     return db_with_test_data["app"].test_client()
 
 
+def test_get_grafana_api_version(client):
+    """
+    sanity test on /grafana/version
+
+    :param client: client connected to flask app with test db
+    """
+    rv = client.get("/grafana/version")
+    assert rv.status_code == 200
+    assert rv.data == b'0.1'
+
+
 def test_get_grafana_metrics(client):
     """
     sanity test on /grafana/metrics
 
     test data contains non-zero number of metrics
-    :param db_with_test_data: flask app and sqlalchemy session instances
+    :param client: client connected to flask app with test db
     """
 
     payload = {
@@ -40,7 +51,7 @@ def test_get_grafana_metrics(client):
     response = json.loads(rv.data)
 
     response_schema = {
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "array",
         "items": {
             "type": "object",
@@ -63,7 +74,7 @@ def test_get_grafana_timeseries(client):
     sanity test on /grafana/timeseries
 
     test data contains non-zero number of data points
-    :param db_with_test_data: flask app and sqlalchemy session instances
+    :param client: client connected to flask app with test db
     """
 
     payload = {
@@ -81,7 +92,7 @@ def test_get_grafana_timeseries(client):
     response = json.loads(rv.data)
 
     response_schema = {
-        "$schema": "http://json-schema.org/draft-04/schema#",
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "array",
         "items": {
             "type": "array",
