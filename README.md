@@ -250,7 +250,108 @@ Responses are json, the following is an example:
             }
         ]
     }
-    ```
+```
+
+### resource: /grafana/version
+
+This resource accepts both GET and POST requests,
+and ignores any payload.
+
+The response is a string containing the protocol version
+supported by the server.
+
+### resource: /grafana/metrics
+
+Use this resource to request a list of metrics available
+as time series.  The returned list is intended to be used
+in the grafana query editor.
+
+Note that the current module is a proof-of-concept, and
+measurement types are limited to those with simple
+single-value timeseries.  (After further discussion we'll
+have a better idea how far to go in representing and
+navigating an esmond archive.)
+
+Requests must be formatted according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "eventtypes": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "enum": [
+                        "throughput",
+                        "packet-count-sent",
+                        "packet-count-lost"]
+                }
+            },
+            "cacheseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "exclusiveMinimum": True
+            }
+        },
+        "required": ["hostname"]
+    }
+```
 
 
+Responses will be formatted according to the following schema:
 
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "text": {"type": "string"},
+                "value": {"type": "string"}
+            },
+            "require": ["text", "value"],
+            "additionalProperties": False
+    }
+```
+
+### resource: /grafana/timeseries
+
+Use this resource to request the list of timeseries
+datapoints for a particular metric.
+
+Requests must be formatted according to the following schema.
+The value of `tsurl` should be the
+value of one of the `value` elements from the
+`/grafana/metrics` response.
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "tsurl": {"type": "string"}
+        },
+        "required": ["hostname", "tsurl"]
+    }
+```
+
+Responses will be formatted according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "array",
+            "items": [
+                {"type": "number"},
+                {"type": "number"}
+            ]
+        }
+    }
+```
