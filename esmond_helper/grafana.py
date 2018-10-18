@@ -33,6 +33,7 @@ def measurement_archive_metrics():
     parsed_request = request.get_json()
 
     schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},
@@ -98,6 +99,7 @@ def measurement_archive_timeseries():
     parsed_request = request.get_json()
 
     schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},
