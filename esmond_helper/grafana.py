@@ -11,6 +11,7 @@ from werkzeug.exceptions import BadRequest
 from esmond_helper.model import db
 from esmond_helper import proxy
 from esmond_helper import common
+from esmond_helper import esmond
 
 server = Blueprint("grafana", __name__)
 
@@ -123,3 +124,102 @@ def measurement_archive_timeseries():
     return Response(
         json.dumps(list(datapoints)),
         mimetype="application/json")
+
+
+@server.route("/measurement-types", methods=["POST"])
+@common.require_accepts_json
+def measurement_types():
+
+    parsed_request = request.get_json()
+
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+        },
+        "required": ["hostname"]
+    }
+
+    try:
+        validate(parsed_request, schema)
+    except ValidationError as e:
+        raise BadRequest(str(e))
+
+    return Response(
+        json.dumps(
+            esmond.get_available_measurement_types(
+                mp_hostname=parsed_request["hostname"],
+                session=db.session
+            )
+        ),
+        mimetype="application/json"
+    )
+
+
+@server.route("/participants", methods=["POST"])
+@common.require_accepts_json
+def participants():
+
+    parsed_request = request.get_json()
+
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "measurement-type": {"type": "string"}
+        },
+        "required": ["hostname", "measurement-type"]
+    }
+
+    try:
+        validate(parsed_request, schema)
+    except ValidationError as e:
+        raise BadRequest(str(e))
+
+    return Response(
+        json.dumps(
+            esmond.get_available_participants(
+                mp_hostname=parsed_request["hostname"],
+                measurement_type=parsed_request["measurement-type"],
+                session=db.session
+            )
+        ),
+        mimetype="application/json"
+    )
+
+
+@server.route("/summaries", methods=["POST"])
+@common.require_accepts_json
+def summaries():
+
+    parsed_request = request.get_json()
+
+    schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "measurement-type": {"type": "string"},
+            "metadata-key": {"type": "string"}
+        },
+        "required": ["hostname", "measurement-type", "metadata-key"]
+    }
+
+    try:
+        validate(parsed_request, schema)
+    except ValidationError as e:
+        raise BadRequest(str(e))
+
+    return Response(
+        json.dumps(
+            esmond.get_available_summaries(
+                mp_hostname=parsed_request["hostname"],
+                measurement_type=parsed_request["measurement-type"],
+                metadata_key=parsed_request["metadata-key"],
+                session=db.session
+            )
+        ),
+        mimetype="application/json"
+    )

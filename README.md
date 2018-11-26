@@ -9,6 +9,10 @@
 - Python 3
 - TODO ...
 
+## initializing
+
+cf. https://flask-migrate.readthedocs.io/en/latest/
+
 ## running
 
 1. install the package (in a ``virtualenv`` would be nice, of course)
@@ -355,3 +359,4 @@ Responses will be formatted according to the following schema:
         }
     }
 ```
+
