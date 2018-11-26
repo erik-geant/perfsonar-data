@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="esmond_helper",
+    name="esmond-helper",
     version="0.7",
     description="esmond helper/proxy",
     packages=find_packages(exclude=("tests",)),
