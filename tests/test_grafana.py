@@ -38,7 +38,7 @@ def test_get_grafana_metrics(client):
     """
 
     payload = {
-        "hostname": "perfsonar.debrecen3.hbone.hu"
+        "hostname": "64.106.40.252"
     }
 
     rv = client.post(
@@ -78,8 +78,8 @@ def test_get_grafana_timeseries(client):
     """
 
     payload = {
-        "hostname": "perfsonar.debrecen3.hbone.hu",
-        "tsurl": "/esmond/perfsonar/archive/4b84bee4247e419a9b422a85b27d4f78/packet-count-lost/aggregations/86400"  # noqa: ignore=E501
+        "hostname": "64.106.40.252",
+        "tsurl": "/esmond/perfsonar/archive/38db04b7baf04ff5aa26af689b33fd4d/packet-count-lost/aggregations/86400"  # noqa: ignore=E501
     }
 
     rv = client.post(
