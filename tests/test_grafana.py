@@ -123,7 +123,6 @@ def _get_summaries(client, measurement_type, metadata_key):
         data=json.dumps(payload),
         headers=_HEADERS)
 
-
     assert rv.status_code == 200
 
     response = json.loads(rv.data)
@@ -158,7 +157,6 @@ def _get_participants(client, measurement_type):
         "/grafana/participants",
         data=json.dumps(payload),
         headers=_HEADERS)
-
 
     assert rv.status_code == 200
 
@@ -219,5 +217,3 @@ def test_all_metrics(client):
 
     for mt in response:
         _get_participants(client, mt)
-
-

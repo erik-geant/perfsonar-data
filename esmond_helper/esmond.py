@@ -151,7 +151,12 @@ def get_available_participants(mp_hostname, measurement_type, session):
     return list(_participants(data, measurement_type))
 
 
-def get_available_summaries(mp_hostname, measurement_type, metadata_key, session):
+def get_available_summaries(
+        mp_hostname,
+        measurement_type,
+        metadata_key,
+        session):
+
     def _summaries(d, t, k):
         for participant_pair in d:
             if participant_pair["metadata-key"] == k:
