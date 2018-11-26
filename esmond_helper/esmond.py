@@ -107,3 +107,70 @@ def get_time_series(esmond_base_url, summary_id, session):
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
     return data
+
+
+def _esmond_base_url(hostname):
+    return "http://%s/%s" % (
+        hostname.strip("/"), _ESMOND_ARCHIVE_PATH)
+
+
+def get_available_measurement_types(mp_hostname, session):
+    def _event_types(d):
+        for participant_pair in d:
+            for et in participant_pair["event-types"]:
+                if et["summaries"]:
+                    yield et["event-type"]
+
+    data = proxy.load_url_json(
+        _esmond_base_url(mp_hostname),
+        session,
+        expires=_proxy_expires())
+    assert isinstance(data, (list, tuple))
+
+    _et = _event_types(data)
+    return list(set(_et))
+
+
+def get_available_participants(mp_hostname, measurement_type, session):
+
+    def _participants(d, t):
+        for participant_pair in d:
+            for et in participant_pair["event-types"]:
+                if et["summaries"] and et["event-type"] == t:
+                    yield {
+                        "source": participant_pair["source"],
+                        "destination": participant_pair["destination"],
+                        "metadata-key": participant_pair["metadata-key"]
+                    }
+
+    data = proxy.load_url_json(
+        _esmond_base_url(mp_hostname),
+        session,
+        expires=_proxy_expires())
+    assert isinstance(data, (list, tuple))
+    return list(_participants(data, measurement_type))
+
+
+def get_available_summaries(
+        mp_hostname,
+        measurement_type,
+        metadata_key,
+        session):
+
+    def _summaries(d, t, k):
+        for participant_pair in d:
+            if participant_pair["metadata-key"] == k:
+                for et in participant_pair["event-types"]:
+                    if et["summaries"] and et["event-type"] == t:
+                        for s in et["summaries"]:
+                            yield {
+                                "type": s["summary-type"],
+                                "window": s["summary-window"]
+                            }
+
+    data = proxy.load_url_json(
+        _esmond_base_url(mp_hostname),
+        session,
+        expires=_proxy_expires())
+    assert isinstance(data, (list, tuple))
+    return list(_summaries(data, measurement_type, metadata_key))
