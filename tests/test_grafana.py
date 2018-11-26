@@ -10,6 +10,8 @@ _HEADERS = {
     "Accept": ["application/json"]
 }
 
+MP_HOSTNAME = "64.106.40.252"
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -106,3 +108,116 @@ def test_get_grafana_timeseries(client):
     assert len(response) > 0  # TODO: a better test on the response
     validate(response, response_schema)
     assert len(response) > 0, "test data contains at least 1 data point"
+
+
+def _get_summaries(client, measurement_type, metadata_key):
+
+    payload = {
+        "hostname": MP_HOSTNAME,
+        "measurement-type": measurement_type,
+        "metadata-key": metadata_key
+    }
+
+    rv = client.post(
+        "/grafana/summaries",
+        data=json.dumps(payload),
+        headers=_HEADERS)
+
+
+    assert rv.status_code == 200
+
+    response = json.loads(rv.data)
+
+    response_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string"},
+                "window": {"type": "string"}
+            },
+            "require": ["type", "window"],
+            "additionalProperties": False
+        }
+    }
+
+    assert len(response) > 0  # TODO: a better test on the response
+    validate(response, response_schema)
+    assert len(response) > 0, "test data contains at least 1 data point"
+
+
+def _get_participants(client, measurement_type):
+
+    payload = {
+        "hostname": MP_HOSTNAME,
+        "measurement-type": measurement_type
+    }
+
+    rv = client.post(
+        "/grafana/participants",
+        data=json.dumps(payload),
+        headers=_HEADERS)
+
+
+    assert rv.status_code == 200
+
+    response = json.loads(rv.data)
+
+    response_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "source": {"type": "string"},
+                "destination": {"type": "string"},
+                "metadata-key": {"type": "string"}
+            },
+            "require": ["source", "destination", "metadata-key"],
+            "additionalProperties": False
+        }
+    }
+
+    assert len(response) > 0  # TODO: a better test on the response
+    validate(response, response_schema)
+    assert len(response) > 0, "test data contains at least 1 data point"
+
+    for p in response:
+        _get_summaries(client, measurement_type, p["metadata-key"])
+
+
+def test_all_metrics(client):
+    """
+    sanity test on /grafana/measurement-types,
+    /grafana/participants and /grafana/summaries
+
+    test data contains nont-zero number of data points
+    :param client: client connected to flask app with test db
+    """
+
+    payload = {"hostname": MP_HOSTNAME}
+
+    rv = client.post(
+        "/grafana/measurement-types",
+        data=json.dumps(payload),
+        headers=_HEADERS)
+
+    assert rv.status_code == 200
+
+    response = json.loads(rv.data)
+
+    response_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {"type": "string"}
+    }
+
+    assert len(response) > 0  # TODO: a better test on the response
+    validate(response, response_schema)
+    assert len(response) > 0, "test data contains at least 1 data point"
+
+    for mt in response:
+        _get_participants(client, mt)
+
+
