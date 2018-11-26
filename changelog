@@ -4,3 +4,4 @@
 0.4: read dsn from settings file
 0.5: grafana helper routes
 0.6: added /grafana/version route, updated docs
+0.7: added routes for more detailed metric filtering
