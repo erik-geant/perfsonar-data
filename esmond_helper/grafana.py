@@ -126,9 +126,11 @@ def measurement_archive_timeseries():
         metric = parsed_request.get("metric", _DEFAULT_TIMESERIES_METRIC_TYPE)
         if metric == "mode":
             # hack ... this is just what was seen in sample queries
-            datapoints = [[x["val"][metric][0], 1000 * x["ts"]] for x in timeseries_json]
+            datapoints = [[x["val"][metric][0], 1000 * x["ts"]]
+                          for x in timeseries_json]
         else:
-            datapoints = [[x["val"][metric], 1000 * x["ts"]] for x in timeseries_json]
+            datapoints = [[x["val"][metric], 1000 * x["ts"]]
+                          for x in timeseries_json]
     else:
         datapoints = [[x["val"], 1000 * x["ts"]] for x in timeseries_json]
 
