@@ -134,15 +134,17 @@ def _get_summaries(client, measurement_type, metadata_key):
             "type": "object",
             "properties": {
                 "type": {"type": "string"},
-                "window": {"type": "string"}
+                "window": {"type": "string"},
+                "uri": {"type": "string"}
             },
-            "require": ["type", "window"],
+            "require": ["type", "window", "uri"],
             "additionalProperties": False
         }
     }
 
-    assert len(response) > 0  # TODO: a better test on the response
     validate(response, response_schema)
+
+    # TODO: a better test on the response
     assert len(response) > 0, "test data contains at least 1 data point"
 
 
@@ -177,8 +179,9 @@ def _get_participants(client, measurement_type):
         }
     }
 
-    assert len(response) > 0  # TODO: a better test on the response
     validate(response, response_schema)
+
+    # TODO: a better test on the response
     assert len(response) > 0, "test data contains at least 1 data point"
 
     for p in response:
@@ -211,9 +214,31 @@ def test_all_metrics(client):
         "items": {"type": "string"}
     }
 
-    assert len(response) > 0  # TODO: a better test on the response
     validate(response, response_schema)
+
+    # TODO: a better test on the response
     assert len(response) > 0, "test data contains at least 1 data point"
 
     for mt in response:
         _get_participants(client, mt)
+
+
+def test_metric_types(client):
+
+    rv = client.post(
+        "/grafana/metric-types",
+        headers=_HEADERS)
+
+    assert rv.status_code == 200
+
+    response = json.loads(rv.data)
+
+    response_schema = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {"type": "string"}
+    }
+
+    assert len(response) > 0  # TODO: a better test on the response
+    validate(response, response_schema)
+    assert len(response) > 0, "test data contains at least 1 data point"
