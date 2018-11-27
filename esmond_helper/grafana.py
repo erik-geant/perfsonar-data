@@ -223,3 +223,25 @@ def summaries():
         ),
         mimetype="application/json"
     )
+
+
+@server.route("/metric-types", methods=["POST"])
+@common.require_accepts_json
+def types():
+
+    metric_types = [
+        "standard-deviation",
+        "median",
+        "maximum",
+        "minimum",
+        "mode",
+        "percentile-75",
+        "percentile-25",
+        "percentile-95",
+        "variance",
+        "mean"
+    ]
+
+    return Response(
+        json.dumps(metric_types),
+        mimetype="application/json")
