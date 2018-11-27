@@ -165,7 +165,8 @@ def get_available_summaries(
                         for s in et["summaries"]:
                             yield {
                                 "type": s["summary-type"],
-                                "window": s["summary-window"]
+                                "window": s["summary-window"],
+                                "uri": s["uri"]
                             }
 
     data = proxy.load_url_json(

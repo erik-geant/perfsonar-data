@@ -134,9 +134,10 @@ def _get_summaries(client, measurement_type, metadata_key):
             "type": "object",
             "properties": {
                 "type": {"type": "string"},
-                "window": {"type": "string"}
+                "window": {"type": "string"},
+                "uri": {"type": "string"}
             },
-            "require": ["type", "window"],
+            "require": ["type", "window", "uri"],
             "additionalProperties": False
         }
     }
