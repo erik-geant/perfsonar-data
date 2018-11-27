@@ -6,3 +6,4 @@
 0.6: added /grafana/version route, updated docs
 0.7: added routes for more detailed metric filtering
 0.8: small changes for better grafana support
+0.9: support metric selection for compount time series
