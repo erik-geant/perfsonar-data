@@ -18,6 +18,7 @@ server = Blueprint("grafana", __name__)
 _24H_SECONDS = 24 * 60 * 60
 _DEFAULT_METRIC_LIST_EXPIRATION = _24H_SECONDS
 _DEFAULT_TIMESERIES_REQUEST_EXPIRATION = 60
+_DEFAULT_TIMESERIES_METRIC_TYPE = "mean"
 
 _ESMOND_ARCHIVE_PATH = "/esmond/perfsonar/archive/"
 
@@ -104,7 +105,8 @@ def measurement_archive_timeseries():
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},
-            "tsurl": {"type": "string"}
+            "tsurl": {"type": "string"},
+            "metric": {"type": "string"}
         },
         "required": ["hostname", "tsurl"]
     }
@@ -120,7 +122,16 @@ def measurement_archive_timeseries():
         session=db.session,
         expires=_DEFAULT_TIMESERIES_REQUEST_EXPIRATION + int(time.time()))
 
-    datapoints = [[x["val"], 1000 * x["ts"]] for x in timeseries_json]
+    if timeseries_json and isinstance(timeseries_json[0]["val"], dict):
+        metric = parsed_request.get("metric", _DEFAULT_TIMESERIES_METRIC_TYPE)
+        if metric == "mode":
+            # hack ... this is just what was seen in sample queries
+            datapoints = [[x["val"][metric][0], 1000 * x["ts"]] for x in timeseries_json]
+        else:
+            datapoints = [[x["val"][metric], 1000 * x["ts"]] for x in timeseries_json]
+    else:
+        datapoints = [[x["val"], 1000 * x["ts"]] for x in timeseries_json]
+
     return Response(
         json.dumps(list(datapoints)),
         mimetype="application/json")
