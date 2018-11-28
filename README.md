@@ -4,6 +4,23 @@
   data extracted from esmond archives
 - provides an http server for querying data
 
+1. [requirements]
+2. [initializing]
+3. [running]
+4. [notes]
+5. [protocol]
+   1. [general]
+   2. [resource: /slshosts]
+   3. [resource: /esmond/participants]
+   4. [resource: /esmond/series]
+   5. [resource: /grafana/version]
+   6. [resource: /grafana/metrics]
+   7. [resource: /grafana/timeseries]
+   8. [resource: /grafana/measurement-types]
+   9. [resource: /grafana/participants]
+   10. [resource: /grafana/summaries]
+   11. [resource: /grafana/metric-types]
+
 ## requirements
 
 - Python 3
@@ -11,7 +28,7 @@
 
 ## initializing
 
-cf. https://flask-migrate.readthedocs.io/en/latest/
+cf. https://flask-migrate.readthedocs.io/en/latest/ (TODO)
 
 ## running
 
@@ -266,6 +283,8 @@ supported by the server.
 
 ### resource: /grafana/metrics
 
+*DEPRECATED*
+
 Use this resource to request a list of metrics available
 as time series.  The returned list is intended to be used
 in the grafana query editor.
@@ -327,10 +346,7 @@ Responses will be formatted according to the following schema:
 Use this resource to request the list of timeseries
 datapoints for a particular metric.
 
-Requests must be formatted according to the following schema.
-The value of `tsurl` should be the
-value of one of the `value` elements from the
-`/grafana/metrics` response.
+Requests must be formatted according to the following schema:
 
 ```json
     {
@@ -338,11 +354,21 @@ value of one of the `value` elements from the
         "type": "object",
         "properties": {
             "hostname": {"type": "string"},
-            "tsurl": {"type": "string"}
+            "tsurl": {"type": "string"},
+            "metric": {"type": "string"}
         },
         "required": ["hostname", "tsurl"]
     }
 ```
+
+* `hostname`: hostname (or address) of the measurement archive
+* `tsurl`: the value of `uri` copied from one of the elements in
+   the list returned from a call to `/grafana/summaries`
+* `metric`: *(optional)* one of the strings returned from a
+    call to `/grafana/metric-types`.  This value will be
+    ignored if the dataset contains only a single metric.
+    If this value is not provided and the dataset is multi-valued
+    then the default value is `mean`.
 
 Responses will be formatted according to the following schema:
 
@@ -360,3 +386,149 @@ Responses will be formatted according to the following schema:
     }
 ```
 
+### resource: /grafana/measurement-types
+
+Use this resource to retrieve a list of the measurement types
+(e.g `throughput`, `histogram-owdelay`, etc.)
+available from the selected measurement archive.
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+        },
+        "required": ["hostname"]
+    }
+```
+
+Responses will contain the list of available measurement types
+and will be formatted according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {"type": "string"}
+    }
+```
+
+### resource: /grafana/participants
+
+Use this resource to retrieve a list of source/target pairs
+for which the measurement archives is providing measurement
+results.
+
+Requests must be formatted according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "measurement-type": {"type": "string"}
+        },
+        "required": ["hostname", "measurement-type"]
+    }
+```
+
+* `hostname`: hostname (or address) of the measurement archive
+* `measurement-type`: one of the strings returned from a
+    previous call to the `/grafana/measurement-types` resource.
+    Only participants with available measurement results of the indicated
+    type will be returned.
+
+Responses will contain a list of participants for which
+measurement results are available of the requested type,
+and will be formatted as follows:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "source": {"type": "string"},
+                "destination": {"type": "string"},
+                "metadata-key": {"type": "string"}
+            },
+            "require": ["source", "destination", "metadata-key"],
+            "additionalProperties": False
+        }
+    }
+```
+
+### resource: /grafana/summaries
+
+Use this resource to retrieve a list of measurement results
+available for the indicated measurement type and participant
+pair.
+
+Requests must be formatted according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "hostname": {"type": "string"},
+            "measurement-type": {"type": "string"},
+            "metadata-key": {"type": "string"}
+        },
+        "required": ["hostname", "measurement-type", "metadata-key"]
+    }
+```
+
+* `hostname`: hostname (or address) of the measurement archive
+* `measurement-type`: one of the strings returned from a
+    previous call to the `/grafana/measurement-types` resource.
+    Only test results of this type will be returned.
+* `metadata-key`: the value of `metadata-key` copied from one
+    of the elements returned from a previous call to
+    the `/grafana/participants` resource.
+
+Responses will contain a list of available measurement result
+sets that satisfy the above filter criteria and will
+be formatted according the the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "type": {"type": "string"},
+                "window": {"type": "string"},
+                "uri": {"type": "string"}
+            },
+            "require": ["type", "window", "uri"],
+            "additionalProperties": False
+        }
+    }
+```
+
+* `type`: a keyword describing the result data set format
+* `window`: the granularity window of the data set
+* `uri`: a uri that must be used with calls to
+`/grafana/timeseries` in order to retrieve this data set.
+
+
+### resource: /grafana/metric-types
+
+Use this resource to retrieve a list of the types of metrics
+that can be included in a single data set.  Responses will be a list
+of strings that can be used to the optional `metric` parameter
+in calls to `/grafana/timeseries` and will be formatted
+according to the following schema:
+
+```json
+    {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "array",
+        "items": {"type": "string"}
+    }
+```
