@@ -172,7 +172,8 @@ def _get_participants(client, measurement_type):
             "properties": {
                 "source": {"type": "string"},
                 "destination": {"type": "string"},
-                "metadata-key": {"type": "string"}
+                "metadata-key": {"type": "string"},
+                "time-updated": {"type": "integer"}
             },
             "require": ["source", "destination", "metadata-key"],
             "additionalProperties": False

@@ -140,7 +140,9 @@ def get_available_participants(mp_hostname, measurement_type, session):
                     yield {
                         "source": participant_pair["source"],
                         "destination": participant_pair["destination"],
-                        "metadata-key": participant_pair["metadata-key"]
+                        "metadata-key": participant_pair["metadata-key"],
+                        "time-updated":
+                            et["time-updated"] if et["time-updated"] else 0
                     }
 
     data = proxy.load_url_json(
@@ -148,7 +150,12 @@ def get_available_participants(mp_hostname, measurement_type, session):
         session,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
-    return list(_participants(data, measurement_type))
+
+    participants = list(_participants(data, measurement_type))
+    return sorted(
+        participants,
+        key=lambda k: k['time-updated'],
+        reverse=True)
 
 
 def get_available_summaries(

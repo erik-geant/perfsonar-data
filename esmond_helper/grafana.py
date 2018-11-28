@@ -149,7 +149,7 @@ def measurement_types():
         "$schema": "http://json-schema.org/draft-07/schema#",
         "type": "object",
         "properties": {
-            "hostname": {"type": "string"},
+            "hostname": {"type": "string"}
         },
         "required": ["hostname"]
     }
