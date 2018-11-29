@@ -1,3 +1,4 @@
+import json
 import os
 import tempfile
 
@@ -5,7 +6,7 @@ import pytest
 import flask_migrate
 
 import esmond_helper
-from esmond_helper import model
+# from esmond_helper import model
 
 from . import data
 
@@ -49,27 +50,62 @@ def empty_db():
             os.unlink(db_filename)
 
 
+class MockedRedis(object):
+
+    db = None
+
+    def __init__(self, *args, **kwargs):
+        if MockedRedis.db is None:
+
+            MockedRedis.db = {}
+            for url, filename in data.TEST_DATA_FILES.items():
+
+                with open(os.path.join(data.DATA_PATH, filename), 'rb') as f:
+                    content = f.read()
+                    MockedRedis.db[url] = content
+                    MockedRedis.db[url.encode('utf-8')] = content
+
+    def set(self, key, value):
+        MockedRedis.db[key] = value
+
+    def get(self, key):
+        return MockedRedis.db[key]
+
+    def keys(self, *args, **kwargs):
+        return list([k.encode("utf-8") for k in MockedRedis.db.keys()])
+
+
 @pytest.fixture
-def db_with_test_data(empty_db):
+def mocked_test_redis():
+    return MockedRedis()
+
+
+@pytest.fixture
+def db_with_test_data(mocker):
     """
-    returns a session connected to a temporary database
+    mock redis i/o with test data
 
-    :param empty_db: a sqlalchemy session object
-    :return: the same session
+    :param mocker: mocker fixture
+    :return: nothing
     """
+    mocker.patch(
+        'esmond_helper.proxy.redis.StrictRedis',
+        MockedRedis)
 
-    for url, filename in data.TEST_DATA_FILES.items():
+@pytest.fixture
+def client(db_with_test_data):
 
-        if empty_db["session"].query(model.Doc) \
-                .filter(model.Doc.url == url) \
-                .first() is not None:
-            continue
+    dummy_redis_params = {
+        "hostname": "xyzabc",
+        "port": 9999999
+    }
 
-        with open(os.path.join(data.DATA_PATH, filename),
-                  encoding="utf-8") as f:
-            empty_db["session"].add(model.Doc(
-                url=str(url), doc=f.read()))
+    with tempfile.TemporaryDirectory() as tmpdir:
+        filename = os.path.join(tmpdir, "settings.json")
+        with open(filename, 'w') as f:
+            f.write("REDIS_PARAMS = %s" % json.dumps(dummy_redis_params))
+        os.environ["SETTINGS_FILENAME"] = filename
+        with esmond_helper.create_app().test_client() as c:
+            yield c
 
-            empty_db["session"].commit()
 
-    return empty_db

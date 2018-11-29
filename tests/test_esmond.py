@@ -7,7 +7,7 @@ from tests import data
 logging.basicConfig(level=logging.INFO)
 
 
-def test_esmond_group_by_participants(db_with_test_data):
+def test_esmond_group_by_participants(mocked_test_redis):
     """
     sanity test on group_by_participants
 
@@ -17,7 +17,7 @@ def test_esmond_group_by_participants(db_with_test_data):
 
     tests = esmond.load_tests(
         data.ESMOND_BASE_URL,
-        db_with_test_data["session"])
+        mocked_test_redis)
     num_participants = 0
     for g in esmond.group_by_participants(tests):
         logging.info("participants: " + str(g["participants"]))
@@ -28,7 +28,7 @@ def test_esmond_group_by_participants(db_with_test_data):
         "test data contained participiants, but none found"
 
 
-def test_esmond_group_by_tool(db_with_test_data):
+def test_esmond_group_by_tool(mocked_test_redis):
     """
     sanity test on group_by_tool
 
@@ -38,7 +38,7 @@ def test_esmond_group_by_tool(db_with_test_data):
 
     tests = esmond.load_tests(
         data.ESMOND_BASE_URL,
-        db_with_test_data["session"])
+        mocked_test_redis)
     num_tools = 0
     for name, tests in esmond.group_by_tool(tests).items():
         logging.info("'%s': %d tests" % (name, len(tests)))

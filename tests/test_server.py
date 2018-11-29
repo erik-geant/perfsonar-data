@@ -11,11 +11,6 @@ _HEADERS = {
 }
 
 
-@pytest.fixture
-def client(db_with_test_data):
-    return db_with_test_data["app"].test_client()
-
-
 def test_slshosts(client):
     payload = {"url": data.SLS_BOOTSTRAP_URL}
     rv = client.post(

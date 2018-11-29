@@ -15,11 +15,6 @@ MP_HOSTNAME = "64.106.40.252"
 logging.basicConfig(level=logging.INFO)
 
 
-@pytest.fixture
-def client(db_with_test_data):
-    return db_with_test_data["app"].test_client()
-
-
 def test_get_grafana_api_version(client):
     """
     sanity test on /grafana/version
