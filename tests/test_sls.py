@@ -6,7 +6,7 @@ from tests import data
 logging.basicConfig(level=logging.INFO)
 
 
-def test_sls_bootstrap(db_with_test_data):
+def test_sls_bootstrap(mocked_test_redis):
     """
     location bootstrap sanity check
 
@@ -16,7 +16,7 @@ def test_sls_bootstrap(db_with_test_data):
 
     hosts = list(sls.download_lookup_data(
         data.SLS_BOOTSTRAP_URL,
-        db_with_test_data["session"]))
+        mocked_test_redis))
     assert len(hosts) > 0, "test data should have contained at least 1 host"
     assert len(hosts) == 1792, \
         "bogus test just to snapshot the current test data & code state"

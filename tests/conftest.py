@@ -1,75 +1,69 @@
+import json
 import os
 import tempfile
 
 import pytest
-import flask_migrate
 
 import esmond_helper
-from esmond_helper import model
 
 from . import data
 
 
-@pytest.fixture
-def empty_db():
-    """
-    yields a sqlalchemy session to a temporary database
+class MockedRedis(object):
 
-    the temporary database file is deleted once context mgmt is complete
+    db = None
 
-    :return: dsn (string)
-    """
+    def __init__(self, *args, **kwargs):
+        if MockedRedis.db is None:
 
-    fd, db_filename = tempfile.mkstemp()
-    os.close(fd)
+            MockedRedis.db = {}
+            for url, filename in data.TEST_DATA_FILES.items():
 
-    fd, config_filename = tempfile.mkstemp()
-    os.close(fd)
+                with open(os.path.join(data.DATA_PATH, filename), 'rb') as f:
+                    content = f.read()
+                    MockedRedis.db[url] = content
+                    MockedRedis.db[url.encode('utf-8')] = content
 
-    with open(config_filename, 'w') as f:
-        # careful: assumes linux separators
-        f.write('SQLALCHEMY_DATABASE_URI = "sqlite:///%s"' % db_filename)
+    def set(self, key, value):
+        MockedRedis.db[key] = value
 
-    os.environ["SETTINGS_FILENAME"] = config_filename
-    tmp_test_app = esmond_helper.create_app()
+    def get(self, key):
+        return MockedRedis.db[key]
 
-    with tmp_test_app.app_context():
-        flask_migrate.upgrade(
-            directory=os.path.join(esmond_helper.__path__[0], "migrations"),
-            revision="head")
-
-        try:
-            yield {
-                "app": tmp_test_app,
-                "session": esmond_helper.db.session
-            }
-        finally:
-            # don't fill the disk with tmp files ...
-            os.unlink(config_filename)
-            os.unlink(db_filename)
+    def keys(self, *args, **kwargs):
+        return list([k.encode("utf-8") for k in MockedRedis.db.keys()])
 
 
 @pytest.fixture
-def db_with_test_data(empty_db):
+def mocked_test_redis():
+    return MockedRedis()
+
+
+@pytest.fixture
+def db_with_test_data(mocker):
     """
-    returns a session connected to a temporary database
+    mock redis i/o with test data
 
-    :param empty_db: a sqlalchemy session object
-    :return: the same session
+    :param mocker: mocker fixture
+    :return: nothing
     """
+    mocker.patch(
+        'esmond_helper.proxy.redis.StrictRedis',
+        MockedRedis)
 
-    for url, filename in data.TEST_DATA_FILES.items():
 
-        if empty_db["session"].query(model.Doc) \
-                .filter(model.Doc.url == url) \
-                .first() is not None:
-            continue
+@pytest.fixture
+def client(db_with_test_data):
 
-        with open(os.path.join(data.DATA_PATH, filename),
-                  encoding="utf-8") as f:
-            empty_db["session"].add(model.Doc(
-                url=str(url), doc=f.read()))
+    dummy_redis_params = {
+        "hostname": "xyzabc",
+        "port": 9999999
+    }
 
-            empty_db["session"].commit()
-
-    return empty_db
+    with tempfile.TemporaryDirectory() as tmpdir:
+        filename = os.path.join(tmpdir, "settings.json")
+        with open(filename, 'w') as f:
+            f.write("REDIS_PARAMS = %s" % json.dumps(dummy_redis_params))
+        os.environ["SETTINGS_FILENAME"] = filename
+        with esmond_helper.create_app().test_client() as c:
+            yield c

@@ -1,8 +1,7 @@
 requests
-alembic
 flask
-flask-sqlalchemy
-flask-migrate
 jsonschema
-gunicorn
+redis
+
 pytest
+pytest-mock

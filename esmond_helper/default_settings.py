@@ -1,2 +1,4 @@
-SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/esmond-helper.sqlite"
-SQLALCHEMY_TRACK_MODIFICATIONS = False
+REDIS_PARAMS = {
+    "hostname": "test-psui-vis.geant.org",
+    "port": 6379
+}
