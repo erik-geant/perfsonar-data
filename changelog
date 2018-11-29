@@ -8,3 +8,4 @@
 0.8: small changes for better grafana support
 0.9: support metric selection for compount time series
 0.10: sort participant results by last updated timestamp
+0.11: replace sqllite by redis for proxy storage
