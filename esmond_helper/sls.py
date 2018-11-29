@@ -84,20 +84,20 @@ def get_service_location(service_element):
     return location
 
 
-def download_lookup_data(sls_bootstrap_url, session):
+def download_lookup_data(sls_bootstrap_url, connection):
     """
     download mirror hosts from the bootstrap url, and then for each
     download and parse the service list
 
     :param sls_bootstrap_url:
-    :param session: a sqlalchemy session instance
+    :param connection: a proxy database connection
     :return: list of all hosts discovered on each mirror listed
              by the bootstrap url
     """
     hosts = []
-    raw_sls_mirror_data = proxy.load_url_json(sls_bootstrap_url, session)
+    raw_sls_mirror_data = proxy.load_url_json(sls_bootstrap_url, connection)
     for mirror_url in _load_sls_mirrors(raw_sls_mirror_data):
-        raw_service_data = proxy.load_url_json(mirror_url, session)
+        raw_service_data = proxy.load_url_json(mirror_url, connection)
         mirror_hosts = _parse_lookup_data(raw_service_data)
         logging.debug("downloaded from %s: %d"
                       % (mirror_url, len(mirror_hosts)))

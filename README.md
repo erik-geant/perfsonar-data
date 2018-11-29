@@ -34,16 +34,22 @@ cf. https://flask-migrate.readthedocs.io/en/latest/ (TODO)
 
 1. install the package (in a ``virtualenv`` would be nice, of course)
 
-2. create a new database, if necessary
+2. install redis and create a configuration file like:
 
     ```bash
-      FLASK_APP=esmond_helper flask db upgrade
+      REDIS_PARAMS = {
+        "hostname": "localhost",
+        "port": 6379
+    }
+
     ```
 
 3. run the app
 
     ```bash
-    export FLASK_APP=esmond_helper flask run
+    export FLASK_APP=esmond_helper
+    export SETTINGS_FILENAME=<the filename created above>
+    flask run
     ```
 
    or ...
@@ -61,11 +67,10 @@ cf. https://flask-migrate.readthedocs.io/en/latest/ (TODO)
 4. unit tests
 
     ```bash
-    pip install -r requirements.txt
-    # cd somewhere the test runner will find the tests in the ``tests`` directory
-    py.test
-    # or ...
-    py.test --cov-report html:coverage --cov-report term --cov perfsonar_data
+    tox
+    # or, to use a specific interpreter ...
+    tox -e py37
+
     ```
 
 

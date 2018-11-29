@@ -1,5 +1,4 @@
 import json
-import pytest
 
 from jsonschema import validate
 
@@ -9,11 +8,6 @@ _HEADERS = {
     "Content-type": "application/json",
     "Accept": ["application/json"]
 }
-
-
-@pytest.fixture
-def client(db_with_test_data):
-    return db_with_test_data["app"].test_client()
 
 
 def test_slshosts(client):

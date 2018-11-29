@@ -31,6 +31,10 @@ TEST_DATA_FILES = {
         "debrecen3-archive.json",
     "http://perfsonar.debrecen3.hbone.hu/esmond/perfsonar/archive/055e327da6484ce5959dd51a93c93ed5/packet-count-sent/aggregations/86400":  # noqa: ignore=E501
         "debrecen3-86400.json",
+    "http://64.106.40.252//esmond/perfsonar/archive/38db04b7baf04ff5aa26af689b33fd4d/packet-count-lost/aggregations/86400":  # noqa: ignore=E501
+        "esmond-packet-count-lost-86400.json",
+    "http://64.106.40.252//esmond/perfsonar/archive/":
+        "esmond-archive.json",
 
     # TEST_ARCHIVE
     ESMOND_BASE_URL + _ESMOND_ARCHIVE_PATH: "archive.json",
