@@ -91,6 +91,7 @@ def db_with_test_data(mocker):
         'esmond_helper.proxy.redis.StrictRedis',
         MockedRedis)
 
+
 @pytest.fixture
 def client(db_with_test_data):
 
@@ -106,5 +107,3 @@ def client(db_with_test_data):
         os.environ["SETTINGS_FILENAME"] = filename
         with esmond_helper.create_app().test_client() as c:
             yield c
-
-

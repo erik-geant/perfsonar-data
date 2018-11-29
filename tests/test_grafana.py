@@ -1,8 +1,6 @@
 import json
 import logging
 
-import pytest
-
 from jsonschema import validate
 
 _HEADERS = {

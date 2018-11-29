@@ -20,7 +20,10 @@ def db(config=None):
         port=config["port"])
 
 
-def load_url_json(url, connection, expires=_DEFAULT_EXPIRATION+int(time.time())):
+def load_url_json(
+        url,
+        connection,
+        expires=_DEFAULT_EXPIRATION+int(time.time())):
 
     # session.query(model.Doc) \
     #     .filter(model.Doc.expires < int(time.time())) \

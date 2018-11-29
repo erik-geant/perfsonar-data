@@ -12,7 +12,7 @@ def test_esmond_group_by_participants(mocked_test_redis):
     sanity test on group_by_participants
 
     test data contains non-zero number of participants
-    :param db_with_test_data: flask app and sqlalchemy session instances
+    :param mocked_test_redis: mocked redis connection
     """
 
     tests = esmond.load_tests(
@@ -33,7 +33,7 @@ def test_esmond_group_by_tool(mocked_test_redis):
     sanity test on group_by_tool
 
     test data contains non-zero number of tools
-    :param db_with_test_data: flask app and sqlalchemy session instances
+    :param mocked_test_redis: mocked redis connection
     """
 
     tests = esmond.load_tests(

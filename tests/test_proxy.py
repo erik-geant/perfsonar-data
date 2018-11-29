@@ -1,20 +1,11 @@
 import logging
 
-# from esmond_helper import model
-
-from . import data
-
 logging.basicConfig(level=logging.INFO)
 
 
-def test_testdata(mocked_test_redis):
+def test_proxy_placeholder(mocked_test_redis):
     """
-    basic sanity test on the test db creation
-    :param db_with_test_data: flask app and sqlalchemy session instances
+    todo: placeholder for tests of the proxy module
+    :param mocked_test_redis: mocked redis connection
     """
-
-    # test_urls = {r.url for r in
-    #              db_with_test_data["session"].query(model.Doc).all()}
-    #
-    # assert test_urls == set(data.TEST_DATA_FILES.keys())
     pass

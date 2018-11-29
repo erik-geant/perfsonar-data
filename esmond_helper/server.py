@@ -10,12 +10,12 @@ from werkzeug.exceptions import BadRequest
 
 # from esmond_helper.model import db
 from esmond_helper import sls, esmond, proxy
-import redis
 
 _DEFAULT_SLS_BOOTSTRAP_URL = \
     "http://ps-west.es.net:8096/lookup/activehosts.json"
 
 server = Blueprint("psdata", __name__)
+
 
 def _render_lookup_host_element_as_response_element(host):
     """
