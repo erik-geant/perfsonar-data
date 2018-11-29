@@ -13,6 +13,6 @@ setup(
         "flask-sqlalchemy",
         "flask-migrate",
         "jsonschema",
-        "gunicorn",
+        "redis",
     ]
 )
