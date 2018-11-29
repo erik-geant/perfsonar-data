@@ -126,10 +126,10 @@ def measurement_archive_timeseries():
         if metric == "mode":
             # hack ... this is just what was seen in sample queries
             datapoints = [[x["val"][metric][0], 1000 * x["ts"]]
-                          for x in timeseries_json]
+                          for x in timeseries_json if metric in x["val"]]
         else:
             datapoints = [[x["val"][metric], 1000 * x["ts"]]
-                          for x in timeseries_json]
+                          for x in timeseries_json if metric in x["val"]]
     else:
         datapoints = [[x["val"], 1000 * x["ts"]] for x in timeseries_json]
 
