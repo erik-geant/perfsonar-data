@@ -3,7 +3,6 @@ import os
 import tempfile
 
 import pytest
-import flask_migrate
 
 import esmond_helper
 # from esmond_helper import model
@@ -11,44 +10,44 @@ import esmond_helper
 from . import data
 
 
-@pytest.fixture
-def empty_db():
-    """
-    yields a sqlalchemy session to a temporary database
-
-    the temporary database file is deleted once context mgmt is complete
-
-    :return: dsn (string)
-    """
-
-    fd, db_filename = tempfile.mkstemp()
-    os.close(fd)
-
-    fd, config_filename = tempfile.mkstemp()
-    os.close(fd)
-
-    with open(config_filename, 'w') as f:
-        # careful: assumes linux separators
-        f.write('SQLALCHEMY_DATABASE_URI = "sqlite:///%s"' % db_filename)
-
-    os.environ["SETTINGS_FILENAME"] = config_filename
-    tmp_test_app = esmond_helper.create_app()
-
-    with tmp_test_app.app_context():
-        flask_migrate.upgrade(
-            directory=os.path.join(esmond_helper.__path__[0], "migrations"),
-            revision="head")
-
-        try:
-            yield {
-                "app": tmp_test_app,
-                "session": esmond_helper.db.session
-            }
-        finally:
-            # don't fill the disk with tmp files ...
-            os.unlink(config_filename)
-            os.unlink(db_filename)
-
+# @pytest.fixture
+# def empty_db():
+#     """
+#     yields a sqlalchemy session to a temporary database
+#
+#     the temporary database file is deleted once context mgmt is complete
+#
+#     :return: dsn (string)
+#     """
+#
+#     fd, db_filename = tempfile.mkstemp()
+#     os.close(fd)
+#
+#     fd, config_filename = tempfile.mkstemp()
+#     os.close(fd)
+#
+#     with open(config_filename, 'w') as f:
+#         # careful: assumes linux separators
+#         f.write('SQLALCHEMY_DATABASE_URI = "sqlite:///%s"' % db_filename)
+#
+#     os.environ["SETTINGS_FILENAME"] = config_filename
+#     tmp_test_app = esmond_helper.create_app()
+#
+#     with tmp_test_app.app_context():
+#         flask_migrate.upgrade(
+#             directory=os.path.join(esmond_helper.__path__[0], "migrations"),
+#             revision="head")
+#
+#         try:
+#             yield {
+#                 "app": tmp_test_app,
+#                 "session": esmond_helper.db.session
+#             }
+#         finally:
+#             # don't fill the disk with tmp files ...
+#             os.unlink(config_filename)
+#             os.unlink(db_filename)
+#
 
 class MockedRedis(object):
 
