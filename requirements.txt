@@ -2,4 +2,6 @@ requests
 flask
 jsonschema
 redis
+
 pytest
+pytest-mock
