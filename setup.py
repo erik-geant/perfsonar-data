@@ -8,10 +8,7 @@ setup(
     include_package_data=True,
     install_requires=[
         "requests",
-        "alembic",
         "flask",
-        "flask-sqlalchemy",
-        "flask-migrate",
         "jsonschema",
         "redis",
     ]

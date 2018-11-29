@@ -1,8 +1,5 @@
 requests
-alembic
 flask
-flask-sqlalchemy
-flask-migrate
 jsonschema
 redis
 pytest
