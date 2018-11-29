@@ -8,7 +8,6 @@ from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-# from esmond_helper.model import db
 from esmond_helper import sls, esmond, proxy
 
 _DEFAULT_SLS_BOOTSTRAP_URL = \
@@ -146,7 +145,7 @@ def _render_time_series_as_response(time_series_data, keys=set()):
             result["default"].append(
                 {"ts": m["ts"], "value": m["val"]})
         elif isinstance(m["val"], dict):
-            # add the requested values to the reult
+            # add the requested values to the result
             assert keys <= set(m["val"].keys()), \
                 "a measurement data point is missing following keys: " \
                 ", ".join(keys - set(m["val"].keys()))

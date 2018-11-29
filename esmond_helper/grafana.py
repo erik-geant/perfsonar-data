@@ -8,7 +8,6 @@ from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-# from esmond_helper.model import db
 from esmond_helper import proxy
 from esmond_helper import common
 from esmond_helper import esmond
