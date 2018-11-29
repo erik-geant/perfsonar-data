@@ -8,7 +8,7 @@ from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-from esmond_helper.model import db
+# from esmond_helper.model import db
 from esmond_helper import proxy
 from esmond_helper import common
 from esmond_helper import esmond
@@ -72,7 +72,7 @@ def measurement_archive_metrics():
     archive_json = proxy.load_url_json(
         url="http://%s/%s" % (
             parsed_request["hostname"], _ESMOND_ARCHIVE_PATH),
-        session=db.session,
+        connection=proxy.db(),
         expires=cache_seconds+int(time.time()))
 
     def _summaries():
@@ -119,7 +119,7 @@ def measurement_archive_timeseries():
     timeseries_json = proxy.load_url_json(
         url="http://%s/%s" % (
             parsed_request["hostname"], parsed_request["tsurl"]),
-        session=db.session,
+        connection=proxy.db(),
         expires=_DEFAULT_TIMESERIES_REQUEST_EXPIRATION + int(time.time()))
 
     if timeseries_json and isinstance(timeseries_json[0]["val"], dict):
@@ -163,7 +163,7 @@ def measurement_types():
         json.dumps(
             esmond.get_available_measurement_types(
                 mp_hostname=parsed_request["hostname"],
-                session=db.session
+                connection=proxy.db()
             )
         ),
         mimetype="application/json"
@@ -196,7 +196,7 @@ def participants():
             esmond.get_available_participants(
                 mp_hostname=parsed_request["hostname"],
                 measurement_type=parsed_request["measurement-type"],
-                session=db.session
+                connection=proxy.db()
             )
         ),
         mimetype="application/json"
@@ -231,7 +231,7 @@ def summaries():
                 mp_hostname=parsed_request["hostname"],
                 measurement_type=parsed_request["measurement-type"],
                 metadata_key=parsed_request["metadata-key"],
-                session=db.session
+                connection=proxy.db()
             )
         ),
         mimetype="application/json"

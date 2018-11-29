@@ -8,14 +8,14 @@ from jsonschema import validate, ValidationError
 from flask import request, Response, Blueprint
 from werkzeug.exceptions import BadRequest
 
-from esmond_helper.model import db
-from esmond_helper import sls, esmond
+# from esmond_helper.model import db
+from esmond_helper import sls, esmond, proxy
+import redis
 
 _DEFAULT_SLS_BOOTSTRAP_URL = \
     "http://ps-west.es.net:8096/lookup/activehosts.json"
 
 server = Blueprint("psdata", __name__)
-
 
 def _render_lookup_host_element_as_response_element(host):
     """
@@ -71,7 +71,7 @@ def slshosts():
         url = parsed_request.get("url", _DEFAULT_SLS_BOOTSTRAP_URL)
 
     response = [_render_lookup_host_element_as_response_element(h)
-                for h in sls.download_lookup_data(url, db.session)]
+                for h in sls.download_lookup_data(url, proxy.db())]
 
     return Response(json.dumps(response), mimetype="application/json")
 
@@ -118,7 +118,7 @@ def esmond_participants():
 
     # participants = esmond.get_test_participants(
     #                   esmond.load_tests(parsed_request["url"]))
-    all_tests = esmond.load_tests(parsed_request["url"], db.session)
+    all_tests = esmond.load_tests(parsed_request["url"], proxy.db())
 
     response = [
         _render_grouped_participant_tests_element_as_response_element(g)
@@ -196,7 +196,7 @@ def esmond_time_series():
     time_series_doc = esmond.get_time_series(
         esmond_base_url=parsed_request["url"],
         summary_id=parsed_request["id"],
-        session=db.session)
+        connection=proxy.db())
 
     if "keys" in parsed_request:
         response = _render_time_series_as_response(

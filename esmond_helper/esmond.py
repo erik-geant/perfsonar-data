@@ -14,16 +14,16 @@ def _proxy_expires():
     return 300 + int(time.time())
 
 
-def load_tests(ps_base_url, session):
+def load_tests(ps_base_url, connection):
     """
     loads the esmond test archive summary
     :param ps_base_url: perfSONAR base url
-    :param session: a sqlalchemy session instance
+    :param connection: a db connection
     :return: list of test structs
     """
     archive = proxy.load_url_json(
         ps_base_url.strip("/") + _ESMOND_ARCHIVE_PATH,
-        session,
+        connection,
         expires=_proxy_expires())
     assert isinstance(archive, (list, tuple))
     return archive
@@ -90,7 +90,7 @@ def group_by_tool(list_of_tests):
     return result
 
 
-def get_time_series(esmond_base_url, summary_id, session):
+def get_time_series(esmond_base_url, summary_id, connection):
     """
     TODO: think of a nice way to use the actual timestamp
           for this series from the archive ... maybe update
@@ -98,12 +98,12 @@ def get_time_series(esmond_base_url, summary_id, session):
 
     :param esmond_base_url:
     :param summary_id:
-    :param session:
+    :param connection: a db connection
     :return:
     """
     data = proxy.load_url_json(
         esmond_base_url.strip("/") + _ESMOND_ARCHIVE_PATH + summary_id,
-        session,
+        connection,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
     return data
@@ -114,7 +114,7 @@ def _esmond_base_url(hostname):
         hostname.strip("/"), _ESMOND_ARCHIVE_PATH)
 
 
-def get_available_measurement_types(mp_hostname, session):
+def get_available_measurement_types(mp_hostname, connection):
     def _event_types(d):
         for participant_pair in d:
             for et in participant_pair["event-types"]:
@@ -123,7 +123,7 @@ def get_available_measurement_types(mp_hostname, session):
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),
-        session,
+        connection,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
 
@@ -131,7 +131,7 @@ def get_available_measurement_types(mp_hostname, session):
     return list(set(_et))
 
 
-def get_available_participants(mp_hostname, measurement_type, session):
+def get_available_participants(mp_hostname, measurement_type, connection):
 
     def _participants(d, t):
         for participant_pair in d:
@@ -147,7 +147,7 @@ def get_available_participants(mp_hostname, measurement_type, session):
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),
-        session,
+        connection,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
 
@@ -162,7 +162,7 @@ def get_available_summaries(
         mp_hostname,
         measurement_type,
         metadata_key,
-        session):
+        connection):
 
     def _summaries(d, t, k):
         for participant_pair in d:
@@ -178,7 +178,7 @@ def get_available_summaries(
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),
-        session,
+        connection,
         expires=_proxy_expires())
     assert isinstance(data, (list, tuple))
     return list(_summaries(data, measurement_type, metadata_key))
