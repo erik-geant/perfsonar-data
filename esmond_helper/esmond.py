@@ -165,8 +165,8 @@ def get_available_participants(mp_hostname, measurement_type, connection):
                             participant_pair.get("destination", None),
                         "metadata-key":
                             participant_pair.get("metadata-key", None),
-                        "time-updated": et.get["time-updated"]
-                            if et.get('time-update', 0) else 0
+                        "time-updated": et["time-updated"]
+                            if et.get('time-updated', 0) else 0
                     }
 
     data = proxy.load_url_json(
@@ -196,11 +196,11 @@ def get_available_summaries(
                     "window": s["summary-window"],
                     "uri": s["uri"]
                 }
-        yield {
-            "type": "base",
-            "window": "-",
-            "uri": et['base-uri']
-        }
+            yield {
+                "type": "base",
+                "window": "-",
+                "uri": et['base-uri']
+            }
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),
