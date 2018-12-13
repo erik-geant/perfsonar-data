@@ -159,13 +159,13 @@ def get_available_participants(mp_hostname, measurement_type, connection):
                 event_type = et.get('event-type', None)
                 if summaries and event_type == t:
                     yield {
-                        "source": \
+                        "source":
                             participant_pair.get("source", None),
-                        "destination": \
+                        "destination":
                             participant_pair.get("destination", None),
-                        "metadata-key": \
+                        "metadata-key":
                             participant_pair.get("metadata-key", None),
-                        "time-updated": et.get["time-updated"] \
+                        "time-updated": et.get["time-updated"]
                             if et.get('time-update', 0) else 0
                     }
 
@@ -180,6 +180,7 @@ def get_available_participants(mp_hostname, measurement_type, connection):
         participants,
         key=lambda k: k['time-updated'],
         reverse=True)
+
 
 def get_available_summaries(
         mp_hostname,
