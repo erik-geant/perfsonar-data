@@ -6,12 +6,12 @@ _ESMOND_ARCHIVE_PATH = "/esmond/perfsonar/archive/"
 
 def _proxy_expires():
     """
-    simplification: this module computes uses 5 minutes as
+    simplification: this module computes uses 120 minutes as
                 the proxy expiration time of all requests
 
-    :return: ts 300 seconds from now
+    :return: ts 7200 seconds from now
     """
-    return 300 + int(time.time())
+    return 7200 + int(time.time())
 
 
 def load_tests(ps_base_url, connection):
