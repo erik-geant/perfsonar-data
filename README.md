@@ -5,10 +5,9 @@
 - provides an http server for querying data
 
 1. [requirements]
-2. [initializing]
-3. [running]
-4. [notes]
-5. [protocol]
+2. [running]
+3. [notes]
+4. [protocol]
    1. [general]
    2. [resource: /slshosts]
    3. [resource: /esmond/participants]
@@ -24,11 +23,8 @@
 ## requirements
 
 - Python 3
-- TODO ...
-
-## initializing
-
-cf. https://flask-migrate.readthedocs.io/en/latest/ (TODO)
+- Redis
+- ... (todo)
 
 ## running
 
@@ -78,12 +74,6 @@ cf. https://flask-migrate.readthedocs.io/en/latest/ (TODO)
 
 
 * TODO
-
-  - runtime options, either cli or some config file
-     - db is currently hard-coded to ``/tmp/esmond-helper.sqlite``
-     - server port is currently hard-coded to ``8234``
-  - proxy needs to expire documents (add ``expiration`` col to ``docs`` table)
-
 
 ## protocol
 

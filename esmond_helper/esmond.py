@@ -6,12 +6,31 @@ _ESMOND_ARCHIVE_PATH = "/esmond/perfsonar/archive/"
 
 def _proxy_expires():
     """
-    simplification: this module computes uses 5 minutes as
+    simplification: this module computes uses 120 minutes as
                 the proxy expiration time of all requests
 
-    :return: ts 300 seconds from now
+    :return: ts 7200 seconds from now
     """
-    return 300 + int(time.time())
+    return 7200 + int(time.time())
+
+
+def _event_type_nodes(data, measurement_type, metadata_key):
+    """
+    yields a list of event-type nodes from data tree
+    which also have available summaries
+
+    :param data:
+    :param measurement_type:
+    :param metadata_key:
+    :return:
+    """
+    for participant_pair in data:
+        if participant_pair.get("metadata-key", None) == metadata_key:
+            for et in participant_pair.get("event-types", []):
+                summaries = et.get("summaries", [])
+                event_type = et.get("event-type", None)
+                if summaries and event_type == measurement_type:
+                    yield et
 
 
 def load_tests(ps_base_url, connection):
@@ -135,14 +154,19 @@ def get_available_participants(mp_hostname, measurement_type, connection):
 
     def _participants(d, t):
         for participant_pair in d:
-            for et in participant_pair["event-types"]:
-                if et["summaries"] and et["event-type"] == t:
+            for et in participant_pair.get("event-types", []):
+                summaries = et.get('summaries', [])
+                event_type = et.get('event-type', None)
+                if summaries and event_type == t:
                     yield {
-                        "source": participant_pair["source"],
-                        "destination": participant_pair["destination"],
-                        "metadata-key": participant_pair["metadata-key"],
-                        "time-updated":
-                            et["time-updated"] if et["time-updated"] else 0
+                        "source":
+                            participant_pair.get("source", None),
+                        "destination":
+                            participant_pair.get("destination", None),
+                        "metadata-key":
+                            participant_pair.get("metadata-key", None),
+                        "time-updated": et.get["time-updated"]
+                            if et.get('time-update', 0) else 0
                     }
 
     data = proxy.load_url_json(
@@ -165,16 +189,18 @@ def get_available_summaries(
         connection):
 
     def _summaries(d, t, k):
-        for participant_pair in d:
-            if participant_pair["metadata-key"] == k:
-                for et in participant_pair["event-types"]:
-                    if et["summaries"] and et["event-type"] == t:
-                        for s in et["summaries"]:
-                            yield {
-                                "type": s["summary-type"],
-                                "window": s["summary-window"],
-                                "uri": s["uri"]
-                            }
+        for et in _event_type_nodes(d, t, k):
+            for s in et['summaries']:
+                yield {
+                    "type": s["summary-type"],
+                    "window": s["summary-window"],
+                    "uri": s["uri"]
+                }
+        yield {
+            "type": "base",
+            "window": "-",
+            "uri": et['base-uri']
+        }
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),

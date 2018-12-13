@@ -35,7 +35,7 @@ def load_url_json(
     assert "application/json" in r.headers["content-type"]
     data = r.json()
 
-    connection.set(url, r.content, ex=expires)
+    connection.set(url, r.content, ex=expires-int(time.time()))
 
     logging.debug("saved new document for '%s'" % url)
     return data
