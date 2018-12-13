@@ -196,11 +196,11 @@ def get_available_summaries(
                     "window": s["summary-window"],
                     "uri": s["uri"]
                 }
-        yield {
-            "type": "base",
-            "window": "-",
-            "uri": et['base-uri']
-        }
+            yield {
+                "type": "base",
+                "window": "-",
+                "uri": et['base-uri']
+            }
 
     data = proxy.load_url_json(
         _esmond_base_url(mp_hostname),
